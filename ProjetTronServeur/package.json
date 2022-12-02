@@ -5,11 +5,14 @@
   "description": "A sample Apache Cordova application that responds to a client message.",
   "main": "ServerTron.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "nodemon Serv.js"
   },
   "author": "Apache Cordova Team",
   "license": "Apache-2.0",
   "dependencies": {
+    "mongodb": "^4.12.1",
+    "mongoose": "^6.7.5",
     "nodemon": "^2.0.20",
     "websocket": "^1.0.34"
   }
