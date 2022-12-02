@@ -24,7 +24,7 @@ ws.onmessage = function(message){
 
     switch(message.type){
         case 'firstConnection':
-            //Si c'est false, la connexion a échoué, on va afficher le emssage du serveur
+            //Si c'est false, la connexion a échoué, on va afficher le message du serveur
             if(message.connectionStatus === false){
                 document.getElementById('messageServeur').innerHTML = message.message
             } else { //Si c'est true, la connexion a réussi
