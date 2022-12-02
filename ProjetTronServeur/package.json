@@ -1,0 +1,15 @@
+{
+  "name": "tron.server",
+  "displayName": "ServerTron",
+  "version": "1.0.0",
+  "description": "A sample Apache Cordova application that responds to a client message.",
+  "main": "ServerTron.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Apache Cordova Team",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "websocket": "^1.0.34"
+  }
+}
