@@ -5,10 +5,12 @@ ws.onopen = function() {
     console.log("Bienvenue sur le jeu Tron");
 
     //Quand la co est ouverte, on va autoremplir les credentials si on en a qui sont stockés
-    if(localStorage.getItem("name") !== null){
+    if(localStorage.getItem("name") !== null){ //On vérifie qu'il existe des credentials
+        //On récupère les deux
         let name = localStorage.getItem("name");
         let password = localStorage.getItem("password");
 
+        //Et on les met directement dans les input
         document.getElementById('name').value = name;
         document.getElementById('password').value = password;
     };
