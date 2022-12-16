@@ -2,7 +2,16 @@ const ws = new WebSocket('ws://localhost:9898/');
 let DOM_reponse = document.getElementById("reponse");
 
 ws.onopen = function() {
-    console.log("Bienvenue sur le jeu Tron")
+    console.log("Bienvenue sur le jeu Tron");
+
+    //Quand la co est ouverte, on va autoremplir les credentials si on en a qui sont stockés
+    if(localStorage.getItem("name") !== null){
+        let name = localStorage.getItem("name");
+        let password = localStorage.getItem("password");
+
+        document.getElementById('name').value = name;
+        document.getElementById('password').value = password;
+    };
 };
 function connection() {
     let name = document.getElementById('name').value;
@@ -38,11 +47,16 @@ ws.onmessage = function(message){
                 //On stocke les infos de connexion dans le localStorage
                 localStorage.setItem("name", document.getElementById('name').value);
                 localStorage.setItem("password", document.getElementById('password').value);
+                break;
             };
 
         case 'LancementPartie':
             //Quand on reçoit le message de lancement de la partie du serveur
             document.getElementById('waitingRoom').style.display = 'none'; //On cache la room d'attente
             document.getElementById('game').style.display = 'inline-block'; //On affiche le div du jeu
+
+            let departJoueurs = message.positionJoueurs;
+            //TODO: faire passer les positions au jeu pour placer les joueurs
+
     };
 };

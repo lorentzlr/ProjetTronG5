@@ -249,4 +249,9 @@ h1 {
 
 .waitingRoom {
     display: none;
+    margin: 15px;
+}
+
+.game{
+    display: none;
 }
