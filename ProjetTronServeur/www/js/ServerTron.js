@@ -1,3 +1,4 @@
+const { Console } = require('console');
 const http = require('http');
 const server = http.createServer();
 server.listen(9898);
@@ -10,60 +11,73 @@ const User = mongoose.model('User', { name: String , password: String, nbVictoir
 // Création du server WebSocket qui utilise le serveur précédent
 const WebSocketServer = require('websocket').server;
 const wsServer = new WebSocketServer({
- httpServer: server
+    httpServer: server
 });
 
 // Mise en place des événements WebSockets
 wsServer.on('request', function(request) {
     const connection = request.accept(null, request.origin);
-     // Ecrire ici le code qui indique ce que l'on fait en cas de
+    // Ecrire ici le code qui indique ce que l'on fait en cas de
     // réception de message et en cas de fermeture de la WebSocket
-    connection.on('message', function(message) {
+    connection.on('message', async function(message) {
 
         message = JSON.parse(message.utf8Data);
-
         switch (message.type) {
             case "firstConnection":
-                    connection.send(FirstConnection(message.name, message.password));                
+                const retourConnexion = await connectionUtilisateur(message.name, message.password)
+                console.log(retourConnexion)
+                connection.send(retourConnexion);
                 break;
-        
+
             default:
                 break;
         }
-        connection.send(message.utf8Data);
 
-     });
-     connection.on('close', function(reasonCode, description) {
+    });
+    connection.on('close', function(reasonCode, description) {
         console.log("Fermeture du socket raison : " + reasonCode + " description : " + description );
     });
 });
 
 
-function FirstConnection(_name, _password){
+async function connectionUtilisateur(_name, _password){
 
     var messageJson = {
-        "type" : "FirstConnection",
-        "connectionStatus" : true,
-        "idRoom" : 1,
-        "message" : ""
+        type : "FirstConnection",
+        connectionStatus : true,
+        idRoom : 1,
+        message : ""
     }
 
-    if (User.where({name : _name, password: _password}) != null) {
-        messageJson.message = "Connection reussie";
-    }else if (User.where({name : _name}) != null) {
-        messageJson.connectionStatus = false;
-        messageJson.message = "Nom de compte incorrect";
-        
-    }else if (User.where({password: _password}) != null) {
-        messageJson.connectionStatus = false;
-        messageJson.message = "Mot de passe incorrect";
-    }else{
-        const newUser = new User({ name: _name, password: _password , nbVictoire: 0});
-        newUser.save().then(() => console.log('Creation de user'));
-        messageJson.connectionStatus = true;
-        messageJson.message = "Creation du compte";
-    }
-    return JSON.stringify(messageJson);
+    // Retourne une promess qui sera résolue quand l'utilisateur aura créé son compte ou sera connecté
+    return new Promise((resolve1) => {
+        // Cherche l'utilisateur via son login et son password
+        User.findOne({name : _name, password: _password}).exec(async (err, user)=> {
+            // Dans le cas où une erreur serait rencontrée lors du findOne
+            if (err) {
+                // Retourne null
+                resolve1(null);
+            }
+
+            // Si un utilisateur a été trouvé
+            if (user != null) {
+                messageJson.message = "Connection reussie";
+            } else {
+                // Si aucun utilisateur n'a été trouvé on le créé
+                const newUser = new User({ name: _name, password: _password , nbVictoire: 0});
+                // Attends que l'utilisateur soit enregistré dans la BD
+                await new Promise((resolve2) => {
+                    newUser.save().then(() => {
+                        messageJson.connectionStatus = true;
+                        messageJson.message = "Creation du compte";
+                        resolve2();
+                    });
+                });
+            }
+            // On retourne le statut de la connection
+            resolve1(JSON.stringify(messageJson));
+        });
+    });
 }
 
 console.log("Server on");
