@@ -23,7 +23,7 @@ wsServer.on('request', function(request) {
 
         message = JSON.parse(message.utf8Data);
         switch (message.type) {
-            case "firstConnection":
+            case "FirstConnection":
                 const retourConnexion = await connectionUtilisateur(message.name, message.password)
                 console.log(retourConnexion)
                 connection.send(retourConnexion);

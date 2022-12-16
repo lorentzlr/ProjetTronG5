@@ -9,7 +9,7 @@ function connection() {
     let password = document.getElementById('password').value;
 
     let message = {
-        "type" : 'firstConnection',
+        "type" : 'FirstConnection',
         "name" : name,
         "password" : password
     };
@@ -20,14 +20,15 @@ function connection() {
 ws.onmessage = function(message){
 
     //On parse le message pour avoir un objet
-    message = JSON.parse(message);
+    message = JSON.parse(message.data);
 
     switch(message.type){
-        case 'firstConnection':
+        case 'FirstConnection':
             //Si c'est false, la connexion a échoué, on va afficher le message du serveur
             if(message.connectionStatus === false){
                 document.getElementById('messageServeur').innerHTML = message.message
             } else { //Si c'est true, la connexion a réussi
+                console.log("Connexion résussie")
                 document.getElementById('connection').style.display = 'none'; //On cache le menu de login
                 document.getElementById('waitingRoom').style.display = 'inline-block'; //On affiche la salle d'attente
 
@@ -37,6 +38,11 @@ ws.onmessage = function(message){
                 //On stocke les infos de connexion dans le localStorage
                 localStorage.setItem("name", document.getElementById('name').value);
                 localStorage.setItem("password", document.getElementById('password').value);
-            }
+            };
+
+        case 'LancementPartie':
+            //Quand on reçoit le message de lancement de la partie du serveur
+            document.getElementById('waitingRoom').style.display = 'none'; //On cache la room d'attente
+            document.getElementById('game').style.display = 'inline-block'; //On affiche le div du jeu
     };
 };
