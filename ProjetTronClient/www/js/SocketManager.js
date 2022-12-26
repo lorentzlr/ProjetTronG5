@@ -1,4 +1,4 @@
-function SocketManager(affichageManager, roomManager) {
+function SocketManager(affichageManager) {
     const ws = new WebSocket('ws://localhost:9898/');
 
     ws.onopen = function() {
@@ -10,7 +10,7 @@ function SocketManager(affichageManager, roomManager) {
             let login = localStorage.getItem("name");
             let password = localStorage.getItem("password");
 
-            //Et on les met directement dans les input
+            //Et on les met directement dans les inputs
             document.getElementById('name').value = login;
             document.getElementById('password').value = password;
         }
@@ -29,15 +29,18 @@ function SocketManager(affichageManager, roomManager) {
                 }
                 // Si c'est true, la connexion a réussi
                 affichageManager.afficherPageConnexion(message);
-
-                // L'utilisateur peut être dans la room
-                ws.send(JSON.stringify(roomManager.waitingGame(login)));
                 break;
             case 'launchGame' :
-                affichageManager.afficherPartie()
+                affichageManager.afficherPartie();
 
+                // Simulate an HTTP redirect:
+                window.location.href = '/jeu.html';
                 let departJoueurs = message.positionJoueurs;
                 //TODO: faire passer les positions au jeu pour placer les joueurs
+                break;
+            case 'UpdateUsersInRoom' :
+                // mise à jour des informations dans la modale
+                affichageManager.updateWaitingModale(message.room.users.length);
                 break;
         }
     }

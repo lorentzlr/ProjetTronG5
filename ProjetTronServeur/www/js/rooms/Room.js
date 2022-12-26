@@ -8,22 +8,34 @@ module.exports = {
             this.id = id;
         }
 
-        addUserInRoom(login) {
+        addUserInRoom(user) {
             // si la room est full on essai pas de rajouter un utilisateur dedans
             if (this.isRoomFull()) {
                 return;
             }
-            this.users.push(login)
+            this.users.push(user);
+        }
+
+        // enlève un utilisateur de la room
+        removeUserFromRoom(user) {
+            for (let i = 0; i < this.users.length; i++) {
+                if (this.users[i].getLogin() !== user.getLogin) {
+                    delete this.users.splice(i, 1);
+                }
+            }
         }
 
         getId() {
             return this.id;
         }
 
-        isRoomFull()
-        {
+        getUsers() {
+            return this.users;
+        }
+
+        isRoomFull() {
             // on vérfie si la room est plein (superieure à deux joueurs)
-            return this.users.length >= 2;
+            return this.users.length >= 3;
         }
     }
 }
