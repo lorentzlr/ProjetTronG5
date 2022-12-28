@@ -2,7 +2,6 @@ function AffichageManager()
 {
     function afficherPageConnexion(message)
     {
-        console.log("Connexion résussie")
         document.getElementById('connection').style.display = 'none'; //On cache le menu de login
         document.getElementById('waitingRoom').style.display = 'inline-block'; //On affiche la salle d'attente
 
@@ -16,7 +15,7 @@ function AffichageManager()
 
     function afficherMessage(message)
     {
-        document.getElementById('messageServeur').innerHTML = message;
+        document.getElementById('messageServeur').innerText = message;
     }
 
     function afficherPartie() {
@@ -24,9 +23,32 @@ function AffichageManager()
         document.getElementById('game').style.display = 'inline-block'; //On affiche le div du jeu
     }
 
+    function afficherWaitingModale(close_modale_callback)
+    {
+        let waiting_modale = document.getElementById('waiting-modale');
+        waiting_modale.showModal();
+
+        // lorsque la modale se ferme, on appelle la callback
+        waiting_modale.addEventListener('close', close_modale_callback);
+    }
+
+    function fermerWaitingModale()
+    {
+        let waiting_modale = document.getElementById('waiting-modale');
+        waiting_modale.close();
+    }
+
+    // on met à jour la modale de recherche de partie
+    function updateWaitingModale(nb_joueurs) {
+        document.getElementById("nb-joueurs").innerHTML = nb_joueurs;
+    }
+
     return  {
         afficherMessage,
         afficherPageConnexion,
-        afficherPartie
+        afficherPartie,
+        updateWaitingModale,
+        fermerWaitingModale,
+        afficherWaitingModale
     }
 }

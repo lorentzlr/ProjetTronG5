@@ -1,4 +1,8 @@
 function RoomManager() {
+
+    function userInRoom(room) {
+
+    }
     function waitingGame(login) {
         //On affiche la salle d'attente
         document.getElementById('waitingRoom').style.display = 'inline-block';

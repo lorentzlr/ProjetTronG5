@@ -1,0 +1,12 @@
+dialog{
+    border-radius: 10px;
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+}
+
+dialog::backdrop{
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+#nb-joueurs {
+    display: inline;
+}
