@@ -13,6 +13,7 @@ module.exports = {
             if (this.isRoomFull()) {
                 return;
             }
+
             this.users.push(user);
         }
 
@@ -33,8 +34,18 @@ module.exports = {
             return this.users;
         }
 
+        // récupération des noms des joueurs
+        getUsersLogins() {
+            let users_logins = [];
+            this.users.forEach(user => {
+                users_logins.push(user.getLogin());
+            });
+
+            return users_logins;
+        }
+
         isRoomFull() {
-            // on vérfie si la room est plein (superieure à deux joueurs)
+            // on vérfie si la room est pleine (superieur à deux joueurs)
             return this.users.length >= 3;
         }
     }

@@ -7,7 +7,7 @@ const {User} = require("./users/User");
 const server = http.createServer();
 server.listen(9898);
 
-const roomManager = new RoomManager(ConnectedUserCollection);
+const roomManager = new RoomManager();
 
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost:27017/MaBD');
@@ -32,56 +32,71 @@ wsServer.on('request', function(request) {
             case "FirstConnection":
                  const retourConnexion = await connectionUtilisateur(message.name, message.password);
                 if (retourConnexion.connectionStatus) {
-                    user = new User(message.name);
+                    user = new User(message.name, connection);
                 }
 
                 connection.send(JSON.stringify(retourConnexion));
                 break;
             case "waitingForGame":
-                joueurEnRechercheDePartie(connection, user);
+                joueurEnRechercheDePartie(user);
              break;
              case "quitRoom":
-                joueurQuitteLaRecherche(connection, user);
+                joueurQuitteLaRecherche(user);
              break;
+            case "PositionClient" :
+                deplacementJoueur(user, message);
+                break;
             default:
                 break;
         }
     });
 
     connection.on('close', function(reasonCode, description) {
-        joueurQuitteLaRecherche(connection, user);
+        joueurQuitteLaRecherche(user);
 
         // on ne considère plus l'utilisateur comme connecté
         ConnectedUserCollection.removeUserFromCollection(user)
+        user.removeCurrentRoomId();
 
         // UpdateUsersInRoom(room_data, room_updated.getId(), connection);
         console.log("Fermeture du socket raison : " + reasonCode + " description : " + description );
     });
 });
 
+function deplacementJoueur(user, message) {
+    let room_id = user.getCurrentRoomId();
+    if (room_id === null) {
+        return;
+    }
+    let room = roomManager.getRoomById(room_id);
+    // envoie la nouvelle position du joueur à tous les autres joueurs de la partie
+    room.getUsers().forEach(user_from_room => {
+        user_from_room.getConnection().send(JSON.stringify(message));
+    })
+}
 
-function joueurQuitteLaRecherche(connection, user) {
+function joueurQuitteLaRecherche(user) {
     let room_updated = roomManager.removeUserHisFromRoom(user);
 
     // Si l'utilisateur était dans une room, on le retire de la room
     if (room_updated !== null) {
         let event_in_room_data = {
             id_room: room_updated.getId(),
-            room_users: room_updated.getUsers()
+            room_users: room_updated.getUsersLogins()
         };
 
         eventEmitter.emit("UpdateUsersInRoom", event_in_room_data);
     }
 }
 
-function joueurEnRechercheDePartie(connection, user) {
+function joueurEnRechercheDePartie(user) {
     // on rajoute le joueur dans une room
     let room = roomManager.addPlayerInRoom(user);
 
     // on récupère les données pour l'evenement UpdateUsersInRoom
     let event_in_room_data = {
         id_room: room.getId(),
-        room_users: room.getUsers()
+        room_users: room.getUsersLogins()
     };
 
     // Si la room est complète, on peut lancer le jeu
@@ -89,22 +104,22 @@ function joueurEnRechercheDePartie(connection, user) {
         eventEmitter.emit("UpdateUsersInRoom", event_in_room_data);
 
         // on prévient qu'un nouvel utilisateur est dans la room avant de lancer la partie
-        UpdateUsersInRoom(event_in_room_data, room.getUsers(), connection);
+        UpdateUsersInRoom(event_in_room_data, room.getId(), user.getConnection());
 
         // on lance la partie
         let event_data = {id_room: room.getId()};
         eventEmitter.emit("launchGame", event_data);
-        lancementJeu(event_data, room.getId(), connection);
+        lancementJeu(event_data, room.getId(), user.getConnection());
     }
 
     // on attend d'autres joueurs
-    eventEmitter.on("UpdateUsersInRoom",  (room_data) => UpdateUsersInRoom(room_data, room.getId(), connection));
+    eventEmitter.on("UpdateUsersInRoom",  (room_data) => UpdateUsersInRoom(room_data, room.getId(), user.getConnection()));
 
     // on prévient qu'un nouvel utilisateur est dans la room
     eventEmitter.emit("UpdateUsersInRoom", event_in_room_data);
 
     // sinon on attend que la room soit complète
-    eventEmitter.on("launchGame",  (id_room) => lancementJeu(id_room, room.getId(), connection));
+    eventEmitter.on("launchGame",  (id_room) => lancementJeu(id_room, room.getId(), user.getConnection()));
 }
 
 function UpdateUsersInRoom(room_data, room_send_id, connection) {
@@ -126,6 +141,7 @@ function UpdateUsersInRoom(room_data, room_send_id, connection) {
 
 function lancementJeu(id_room_event, id_room, connection) {
     if (id_room_event.id_room === id_room) {
+        eventEmitter.on("deplacementJoueur",  (message) => deplacementJoueur(message));
         // on lance le jeu pour les joueurs dans la rooms
         return connection.send(
             JSON.stringify({
@@ -146,7 +162,7 @@ async function connectionUtilisateur(_name, _password) {
         message : ""
     }
 
-    // Retourne une promess qui sera résolue quand l'utilisateur aura créé son compte ou sera connecté
+    // Retourne une promesse qui sera résolue quand l'utilisateur aura créé son compte ou sera connecté
     return new Promise((resolveConnection) => {
         // Cherche l'utilisateur via son login et son password
         UserDatabase.findOne({name : _name, password: _password}).exec(async (err, userFromDatabase)=> {
