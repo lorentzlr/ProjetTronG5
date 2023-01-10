@@ -4,15 +4,17 @@ const {ConnectedUserCollection} = require("./users/ConnectedUsersCollection");
 const events = require('events');
 const eventEmitter = new events.EventEmitter();
 const {User} = require("./users/User");
+const {Database} = require('./Database');
 const server = http.createServer();
 server.listen(9898);
 
 const roomManager = new RoomManager();
+const database = new Database();
 
-const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/MaBD');
+// const mongoose = require('mongoose');
+// mongoose.connect('mongodb://localhost:27017/MaBD');
 
-const UserDatabase = mongoose.model('User', { name: String , password: String, nbVictoire: Number});
+// const UserDatabase = mongoose.model('User', { name: String , password: String, nbVictoire: Number});
 
 // Création du server WebSocket qui utilise le serveur précédent
 const WebSocketServer = require('websocket').server;
@@ -30,7 +32,8 @@ wsServer.on('request', function(request) {
         message = JSON.parse(message.utf8Data);
         switch (message.type) {
             case "FirstConnection":
-                 const retourConnexion = await connectionUtilisateur(message.name, message.password);
+                //Appel de la fonction de l'objet database pour savoir si l'user peut se connecter
+                 const retourConnexion = await database.connectionUtilisateur(message.name, message.password, ConnectedUserCollection);
                 if (retourConnexion.connectionStatus) {
                     user = new User(message.name, connection);
                 }
@@ -151,6 +154,7 @@ function lancementJeu(id_room_event, id_room, connection) {
     }
 }
 
+/*
 async function connectionUtilisateur(_name, _password) {
     const user = new User(
         _name
@@ -200,5 +204,6 @@ async function connectionUtilisateur(_name, _password) {
         });
     });
 }
+*/
 
 console.log("Server on");
