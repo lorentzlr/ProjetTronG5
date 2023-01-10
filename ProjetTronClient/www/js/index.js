@@ -28,6 +28,8 @@ function quitRoom()
 
 function joinGame()
 {
+
+
     affichageManager.afficherWaitingModale(quitRoom);
     // L'utilisateur peut être dans la room
     socketManager.sendMessage({type: 'waitingForGame'});

@@ -32,9 +32,11 @@ function SocketManager(affichageManager) {
                 break;
             case 'launchGame' :
                 affichageManager.afficherPartie();
-
+                message.positions.forEach(positionsJoueur => {
+                    affichageManager.afficherJoueur(positionsJoueur.position.x, positionsJoueur.position.y, positionsJoueur.login);
+                });
+                console.log(message);
                 // Simulate an HTTP redirect:
-                window.location.href = '/jeu.html';
                 let departJoueurs = message.positionJoueurs;
                 //TODO: faire passer les positions au jeu pour placer les joueurs
                 break;

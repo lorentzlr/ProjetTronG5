@@ -21,6 +21,7 @@ function AffichageManager()
 
     function afficherPartie() {
         document.getElementById('waitingRoom').style.display = 'none'; //On cache la room d'attente
+        fermerWaitingModale();
         document.getElementById('game').style.display = 'inline-block'; //On affiche le div du jeu
     }
 
@@ -44,12 +45,22 @@ function AffichageManager()
         document.getElementById("nb-joueurs").innerHTML = nb_joueurs;
     }
 
+    function afficherJoueur(x,y,login){
+        if (localStorage.getItem("name") == login) {
+            Plateau.initPlayer(x,y,"red")
+            Plateau.updatePos(x,y,"red");
+        }else{
+            Plateau.updatePos(x,y,"black");
+        }
+    }
+
     return  {
         afficherMessage,
         afficherPageConnexion,
         afficherPartie,
         updateWaitingModale,
         fermerWaitingModale,
-        afficherWaitingModale
+        afficherWaitingModale,
+        afficherJoueur
     }
 }

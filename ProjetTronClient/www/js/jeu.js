@@ -41,7 +41,7 @@ class plateau{
     async execute() {
         var j=0;
         while (this.inGame) {
-
+            // socketManager.sendMessage(this.x)
             Plateau.updatePos(this.x+mouvement_x,this.y+mouvement_y,this.color)
             this.x+=mouvement_x;
             this.y+=mouvement_y;
@@ -101,7 +101,4 @@ canvas.height = length;
 const ctx = canvas.getContext('2d');
 
 var Plateau = new plateau(size_tableau, length);
-Plateau.initPlayer(5,5,"Red");
-Plateau.updatePos(5,5,"Red");
 Plateau.drawAll();
-Plateau.execute();
