@@ -16,7 +16,7 @@ function SocketManager(affichageManager) {
         }
     }
 
-    ws.onmessage = function(message)
+    ws.onmessage = async function(message)
     {
         //On parse le message pour avoir un objet
         message = JSON.parse(message.data);
@@ -31,10 +31,25 @@ function SocketManager(affichageManager) {
                 affichageManager.afficherPageConnexion(message);
                 break;
             case 'launchGame' :
+                var size_tableau=40;
+                var length = 800;
+
+                const canvas = document.getElementById('canvas');
+                canvas.width = length;
+                canvas.height = length;
+                const ctx = canvas.getContext('2d');
+
+                let Plateau = new plateau(size_tableau, length, ctx);
+                Plateau.drawAll();
+
+                let JHeu = new jeu(Plateau, sendMessage, ctx);
+                await JHeu.execute();
                 affichageManager.afficherPartie();
                 message.positions.forEach(positionsJoueur => {
-                    affichageManager.afficherJoueur(positionsJoueur.position.x, positionsJoueur.position.y, positionsJoueur.login);
+                    affichageManager.afficherJoueur(positionsJoueur.position.x, positionsJoueur.position.y, positionsJoueur.login, Plateau);
                 });
+
+
                 console.log(message);
                 // Simulate an HTTP redirect:
                 let departJoueurs = message.positionJoueurs;

@@ -45,7 +45,7 @@ function AffichageManager()
         document.getElementById("nb-joueurs").innerHTML = nb_joueurs;
     }
 
-    function afficherJoueur(x,y,login){
+    function afficherJoueur(x,y,login, Plateau){
         if (localStorage.getItem("name") == login) {
             Plateau.initPlayer(x,y,"red")
             Plateau.updatePos(x,y,"red");
