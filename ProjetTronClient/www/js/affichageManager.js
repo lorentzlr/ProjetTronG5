@@ -2,11 +2,13 @@ function AffichageManager()
 {
     function afficherPageConnexion(message)
     {
+        let nomJoueur = document.getElementById('name').value;
         document.getElementById('connection').style.display = 'none'; //On cache le menu de login
         document.getElementById('waitingRoom').style.display = 'inline-block'; //On affiche la salle d'attente
 
         //On affiche un petit message concernant la room
         document.getElementById('infoRoom').innerHTML = "Bienvenue dans la room " + message.idRoom;
+        document.getElementById('infoJoueur').innerHTML = "Joueur : " + nomJoueur + "</br> Victoires : " + message.nbWinUser;
 
         //On stocke les infos de connexion dans le localStorage
         localStorage.setItem("name", document.getElementById('name').value);
