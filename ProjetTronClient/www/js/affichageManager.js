@@ -15,6 +15,7 @@ function AffichageManager()
 
     function afficherMessage(message)
     {
+        console.log(message);
         document.getElementById('messageServeur').innerText = message;
     }
 
