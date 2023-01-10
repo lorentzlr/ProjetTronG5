@@ -46,7 +46,7 @@ module.exports = {
 
         isRoomFull() {
             // on vérfie si la room est pleine (superieur à deux joueurs)
-            return this.users.length >= 3;
+            return this.users.length >= 2;
         }
     }
 }

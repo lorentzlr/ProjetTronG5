@@ -145,7 +145,13 @@ function lancementJeu(id_room_event, id_room, connection) {
         // on lance le jeu pour les joueurs dans la rooms
         return connection.send(
             JSON.stringify({
-                "type" : 'launchGame'
+                "type" : 'launchGame',
+                "position" :{
+                    "x" : 15,
+                    "y" : 15,
+                },
+                "IDRoom" : id_room_event.id_room,
+                "Colors" : "red",
             })
         );
     }

@@ -28,6 +28,8 @@ class plateau{
     updatePos(x, y,color){
         ctx.fillStyle = color;
         ctx.fillRect(x*this.size_cell,y*this.size_cell,this.size_cell,this.size_cell);
+
+        
     }
 
     //Permet de donner les position du joueur en local pour le demarage de la partie
@@ -46,12 +48,27 @@ class plateau{
             this.x+=mouvement_x;
             this.y+=mouvement_y;
             //ici rajouter la fonction denvoie pour le serveur
+
+            // let message = {
+            //     "name" : 'FirstConnection',
+            //     "position" : {
+            //         x : this.x,
+            //         y : this.y,
+            //     },
+            //     "color" : this.color,
+            //     "IDRoom" : 1 
+            // };
+            // SocketManager.sendMessage(message)
             await sleep(50);
         }
     }
     //permet de stopper le jeu quand le joueur va mourir cela nempeche pas de draw les couelurs adverse pour voir le deroulement de la partie
     stop(){
         this.inGame = false;
+    }
+
+    play(){
+        this.inGame = true;
     }
 
 
@@ -101,7 +118,8 @@ canvas.height = length;
 const ctx = canvas.getContext('2d');
 
 var Plateau = new plateau(size_tableau, length);
-Plateau.initPlayer(5,5,"Red");
-Plateau.updatePos(5,5,"Red");
-Plateau.drawAll();
-Plateau.execute();
+// Plateau.initPlayer(5,5,"Red");
+// Plateau.updatePos(5,5,"Red");
+// Plateau.drawAll();
+// Plateau.execute();
+// Plateau.stop();

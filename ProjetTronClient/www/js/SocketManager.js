@@ -34,8 +34,9 @@ function SocketManager(affichageManager) {
                 affichageManager.afficherPartie();
 
                 // Simulate an HTTP redirect:
-                window.location.href = '/jeu.html';
-                let departJoueurs = message.positionJoueurs;
+                
+                Plateau.initPlayer(message.position.x,message.position.y,message.colors, message.IDroom);
+                Plateau.execute();
                 //TODO: faire passer les positions au jeu pour placer les joueurs
                 break;
             case 'UpdateUsersInRoom' :
