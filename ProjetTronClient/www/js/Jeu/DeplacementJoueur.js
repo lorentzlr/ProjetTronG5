@@ -37,30 +37,60 @@ class DeplacementJoueur {
     }
 
     async deplacement() {
+        let direction_x = 0;
+        let direction_y = 0;
         while (this.in_game) {
             await this.sleep(250);
             switch (this.direction) {
                 case "up" :
-                    this.position.x--;
+                    if (direction_x != 1) {
+                        direction_y = 0;
+                        direction_x = -1;
+                    }
                     break;
                 case "right" :
-                    this.position.y++;
+                    if (direction_y != -1) {
+                    direction_y = 1;
+                    direction_x = 0;
+                    }
                     break;
                 case "down" :
-                    this.position.x++;
+                    if (direction_x != -1) {
+                    direction_y = 0;
+                    direction_x = 1;
+                    }
                     break;
                 case "left" :
-                    this.position.y--;
+                    if (direction_y != 1) {
+                        direction_y = -1;
+                        direction_x = 0;
+                    }
                     break;
             }
 
-            let message = {
-                type : 'PositionClient',
-                postion : {
-                    x: this.position.x,
-                    y: this.position.y
-                }
-            };
+            this.position.x+=direction_x;
+            this.position.y+=direction_y;
+            let message = {}
+            if (this.plateau.getCases()[this.position.x][this.position.y].isAWall()) {
+                message = {
+                    type : 'PositionClient',
+                    postion : {
+                        x: this.position.x,
+                        y: this.position.y
+                    },
+                    isAlive : false
+                };
+            }else{
+                message = {
+                    type : 'PositionClient',
+                    postion : {
+                        x: this.position.x,
+                        y: this.position.y
+                    },
+                    isAlive : true
+                };
+            }
+            console.log(message);
             this.sendMessageCallback(message);
 
             this.affichage_manager.afficherPositionJoueurPrincipale(
