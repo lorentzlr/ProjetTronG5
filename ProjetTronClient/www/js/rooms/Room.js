@@ -12,6 +12,10 @@ module.exports = {
             return this.id;
         }
 
+        setRoomUsers(users) {
+            this.users = users;
+        }
+
         countUsersInRoom() {
             return this.users.length;
         }

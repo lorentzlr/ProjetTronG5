@@ -30,7 +30,7 @@ wsServer.on('request', function (request) {
         message = JSON.parse(message.utf8Data);
         switch (message.type) {
             case "FirstConnection":
-                //Appel de la fonction de l'objet database pour savoir si l'user peut se connecter
+                //Appel de la fonction de l'objet database pour savoir si l'adversaire peut se connecter
                 const retourConnexion = await database.connectionUtilisateur(message.name, message.password, ConnectedUserCollection);
                 if (retourConnexion.connectionStatus) {
                     user = new User(message.name, connection);

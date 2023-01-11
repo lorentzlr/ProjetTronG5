@@ -1,14 +1,11 @@
 class DeplacementJoueur {
-    constructor(direction_initial, plateau, affichage_manager, sendMessageCallback) {
+    constructor(direction_initial, plateau, affichage_manager, sendMessageCallback, position_initiale) {
         this.direction = direction_initial;
         this.plateau = plateau;
         this.in_game = true;
         this.affichage_manager = affichage_manager;
         this.sendMessageCallback = sendMessageCallback;
-        this.position = {
-            x: 15,
-            y: 15
-        }
+        this.position = position_initiale;
     }
 
     choixDirection(event) {
@@ -32,11 +29,11 @@ class DeplacementJoueur {
     // Ajout de l'eventListener pour les flèches directionnelles
     async initialisation() {
         window.addEventListener("keydown", this.choixDirection);
-        window.user = this;
-        await this.deplacement();
+        window.adversaire = this;
+        await this.deplacement(login);
     }
 
-    async deplacement() {
+    async deplacement(login) {
         let direction_x = 0;
         let direction_y = 0;
         while (this.in_game) {
@@ -74,7 +71,8 @@ class DeplacementJoueur {
             if (this.plateau.getCases()[this.position.x][this.position.y].isAWall()) {
                 message = {
                     type : 'PositionClient',
-                    postion : {
+                    login : login,
+                    position : {
                         x: this.position.x,
                         y: this.position.y
                     },
@@ -83,14 +81,15 @@ class DeplacementJoueur {
             }else{
                 message = {
                     type : 'PositionClient',
-                    postion : {
+                    login : login,
+                    position : {
                         x: this.position.x,
                         y: this.position.y
                     },
                     isAlive : true
                 };
             }
-            console.log(message);
+
             this.sendMessageCallback(message);
 
             this.affichage_manager.afficherPositionJoueurPrincipale(

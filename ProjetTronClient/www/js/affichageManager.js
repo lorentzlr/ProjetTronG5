@@ -48,6 +48,11 @@ function AffichageManager()
         td.classList.add("position-joueur");
     }
 
+    function afficherAdversaire(case_value) {
+        let td = document.getElementById(case_value);
+        td.classList.add("position-adversaire");
+    }
+
     function afficherPlateau(plateau) {
         let grille = document.getElementById("grille");
         plateau.getCases().forEach(line => {
@@ -83,6 +88,7 @@ function AffichageManager()
         fermerWaitingModale,
         afficherWaitingModale,
         afficherPlateau,
-        afficherPositionJoueurPrincipale
+        afficherPositionJoueurPrincipale,
+        afficherAdversaire,
     }
 }

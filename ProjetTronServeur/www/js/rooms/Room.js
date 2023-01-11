@@ -76,7 +76,7 @@ module.exports = {
             this.users.forEach(user => {
                 users_positions.push({
                     login: user.getLogin(),
-                    position: START_POSITIONS[iterator_positions]
+                    etat_initial: START_POSITIONS[iterator_positions]
                 });
                 iterator_positions++;
             });
