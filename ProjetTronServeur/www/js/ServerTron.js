@@ -53,8 +53,6 @@ wsServer.on('request', function (request) {
     });
 
     connection.on('close', function (reasonCode, description) {
-        joueurQuitteLaRecherche(user);
-
         let room = roomManager.getRoomById(user.getId());
 
         // on vérifie si l'utilisateur est en game
@@ -64,9 +62,7 @@ wsServer.on('request', function (request) {
 
         // si non, on ne considère plus l'utilisateur comme connecté
         ConnectedUserCollection.removeUserFromCollection(user);
-        user.removeCurrentRoomId();
-
-        console.log("Fermeture du socket raison : " + reasonCode + " description : " + description);
+        joueurQuitteLaRecherche(user);
     });
 });
 
@@ -76,6 +72,7 @@ function deplacementJoueur(user, message) {
         return;
     }
     let room = roomManager.getRoomById(room_id);
+
     // envoie la nouvelle position du joueur à tous les autres joueurs de la partie
     room.getUsers().forEach(user_from_room => {
         user_from_room.getConnection().send(JSON.stringify(message));
@@ -106,7 +103,7 @@ function joueurEnRechercheDePartie(user) {
         room_users: room.getUsersLogins()
     };
 
-    // Si la room est complète, on peut lancer le jeu
+    // Si la room est complète, on peut lancer le Grille
     if (room.isRoomFull()) {
         eventEmitter.emit("UpdateUsersInRoom", event_in_room_data);
 
@@ -150,8 +147,7 @@ function UpdateUsersInRoom(room_data, room_send_id, connection) {
 
 function lancementJeu(room_event, id_room, connection) {
     if (room_event.room.getId() === id_room) {
-        eventEmitter.on("deplacementJoueur", (message) => deplacementJoueur(message));
-        // on lance le jeu pour les joueurs dans la rooms
+        // on lance le Grille pour les joueurs dans la rooms
         return connection.send(
             JSON.stringify({
                 type: 'launchGame',

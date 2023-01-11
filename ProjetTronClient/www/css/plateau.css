@@ -1,0 +1,13 @@
+td {
+    width: 5px;
+    height: 5px;
+    border: solid 1px black;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+.position-joueur {
+    background-color: red;
+}
