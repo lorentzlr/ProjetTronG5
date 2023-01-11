@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true); //Pour enlever le warning de deprecation
 const { User } = require("./users/User");
-const UserDatabase = mongoose.model('User', { name: String , password: String, nbVictoire: Number});
+const UserDatabase = mongoose.model('User', { name: String, password: String, nbVictoire: Number });
 
 module.exports = {
     Database: class {
@@ -47,6 +47,7 @@ module.exports = {
                             // renvoie le résultat avec le message d'erreur
                             return resolveConnection(messageJson);
                         } else { //Si les mdp correspondent on connecte
+                            messageJson.nbWinUser = userFromDatabase.nbVictoire;
                             messageJson.message = "Connexion reussie";
                         };
                     } else {
@@ -64,6 +65,22 @@ module.exports = {
                     // On retourne le statut de la connection
                     resolveConnection(messageJson);
                 });
+            });
+        }
+
+        /** Rajoute +1 au nb de victoires du joueur gagnant
+         * 
+         * @param {*} username le nom du joueur gagnant
+         */
+        async addOneWin(username) {
+            new Promise((resolveConnection) => {
+                UserDatabase.updateOne({ name: username }, { $inc: { 'nbVictoire': 1 } }, async(err) => {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        resolveConnection();
+                    };
+                })
             });
         }
     }
