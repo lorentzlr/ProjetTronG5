@@ -23,16 +23,13 @@ function AffichageManager()
 
     function afficherPartie() {
         document.getElementById('waitingRoom').style.display = 'none'; //On cache la room d'attente
-        document.getElementById('game').style.display = 'inline-block'; //On affiche le div du jeu
+        document.getElementById('game').style.display = 'inline-block'; //On affiche le div du Grille
     }
 
-    function afficherWaitingModale(close_modale_callback)
+    function afficherWaitingModale()
     {
         let waiting_modale = document.getElementById('waiting-modale');
         waiting_modale.showModal();
-
-        // lorsque la modale se ferme, on appelle la callback
-        waiting_modale.addEventListener('close', close_modale_callback);
     }
 
     function fermerWaitingModale()
@@ -46,12 +43,43 @@ function AffichageManager()
         document.getElementById("nb-joueurs").innerHTML = nb_joueurs;
     }
 
+    function afficherPositionJoueurPrincipale(case_value) {
+        let td = document.getElementById(case_value);
+        td.classList.add("position-joueur");
+    }
+
+    function afficherPlateau(plateau) {
+        let grille = document.getElementById("grille");
+        plateau.getCases().forEach(line => {
+            let tr = addLine(grille);
+            line.forEach(one_case => {
+                addCase(tr, one_case);
+            })
+        })
+    }
+
+    // ajout des lignes de la grille
+    function addLine(grille) {
+        let tr = document.createElement("tr")
+        grille.appendChild(tr);
+        return tr;
+    }
+
+    // ajout des cases de la grille
+    function addCase(tr, one_case) {
+        let td = document.createElement("td");
+        td.id = one_case.getValeur();
+        tr.appendChild(td);
+    }
+
     return  {
         afficherMessage,
         afficherPageConnexion,
         afficherPartie,
         updateWaitingModale,
         fermerWaitingModale,
-        afficherWaitingModale
+        afficherWaitingModale,
+        afficherPlateau,
+        afficherPositionJoueurPrincipale
     }
 }

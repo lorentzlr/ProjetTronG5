@@ -10,6 +10,7 @@
         <meta name="color-scheme" content="light dark">
         <link rel="stylesheet" href="css/index.css">
         <link rel="stylesheet" href="css/waiting-modal.css">
+        <link rel="stylesheet" href="css/plateau.css">
         <title>TRON</title>
     </head>
 
@@ -49,13 +50,13 @@
         <div id="game" hidden="">
             <h1> Jeu lancé </h1>
         </div>
-        <!-- <p>Rom numero :</p>
-            <input type="text" id="ndc">
 
+        <table id="grille">
+        </table>
 
-            <button onclick="connexion()">Envoi</button>
-
-            <p id="reponse"></p> -->
+        <script src="js/Grille/Case.js"></script>
+        <script src="js/Grille/Plateau.js"></script>
+        <script src="js/Jeu/DeplacementJoueur.js"></script>
         <script src="js/rooms/roomManager.js"></script>
         <script src="js/affichageManager.js"></script>
         <script src="js/SocketManager.js"></script>

@@ -8,7 +8,7 @@ module.exports = {
             // id de la room
             this.id = id;
 
-            // etat de la room: en cours de jeu ou non
+            // etat de la room: en cours de game ou non
             this.is_game_running = false;
         }
 
