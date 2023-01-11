@@ -1,3 +1,4 @@
+const {START_POSITIONS, MAX_USERS_PER_ROOM} = require("../constants");
 module.exports = {
     Room: class {
         constructor(id) {
@@ -6,6 +7,9 @@ module.exports = {
 
             // id de la room
             this.id = id;
+
+            // etat de la room: en cours de Grille ou non
+            this.is_game_running = false;
         }
 
         addUserInRoom(user) {
@@ -45,8 +49,39 @@ module.exports = {
         }
 
         isRoomFull() {
-            // on vérfie si la room est pleine (superieur à deux joueurs)
-            return this.users.length >= 3;
+            // on vérifie si la room est pleine (superieur à deux joueurs)
+            return this.users.length >= MAX_USERS_PER_ROOM;
+        }
+
+        isGameRunning()
+        {
+            return this.is_game_running;
+        }
+
+        gameStart()
+        {
+            this.is_game_running = true;
+        }
+
+        gameEnd()
+        {
+            this.is_game_running = false;
+        }
+
+        getUsersPositions() {
+            let users_positions = [];
+            let iterator_positions = 0;
+
+            // pour chaque joueur dans la room on récupère sa position
+            this.users.forEach(user => {
+                users_positions.push({
+                    login: user.getLogin(),
+                    position: START_POSITIONS[iterator_positions]
+                });
+                iterator_positions++;
+            });
+
+            return users_positions;
         }
     }
 }
