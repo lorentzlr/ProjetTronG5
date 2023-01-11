@@ -70,14 +70,27 @@ class DeplacementJoueur {
 
             this.position.x+=direction_x;
             this.position.y+=direction_y;
-
-            let message = {
-                type : 'PositionClient',
-                postion : {
-                    x: this.position.x,
-                    y: this.position.y
-                }
-            };
+            let message = {}
+            if (this.plateau.getCases()[this.position.x][this.position.y].isAWall()) {
+                message = {
+                    type : 'PositionClient',
+                    postion : {
+                        x: this.position.x,
+                        y: this.position.y
+                    },
+                    isAlive : false
+                };
+            }else{
+                message = {
+                    type : 'PositionClient',
+                    postion : {
+                        x: this.position.x,
+                        y: this.position.y
+                    },
+                    isAlive : true
+                };
+            }
+            console.log(message);
             this.sendMessageCallback(message);
 
             this.affichage_manager.afficherPositionJoueurPrincipale(
