@@ -7,6 +7,9 @@ class Plateau {
             let line = []
             for (let j =0; j <= size_plateau; j++) {
                 let one_case = new Case(i, j, valeur);
+                if (i == 0 || i == size_plateau || j == 0 || j == size_plateau) {
+                    one_case.becomeIsAWall();
+                }
                 line.push(one_case);
                 valeur++;
             }

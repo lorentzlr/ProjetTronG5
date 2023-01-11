@@ -69,6 +69,9 @@ function AffichageManager()
     function addCase(tr, one_case) {
         let td = document.createElement("td");
         td.id = one_case.getValeur();
+        if (one_case.isAWall()) {
+            td.classList.add("position-Mur");
+        }
         tr.appendChild(td);
     }
 
