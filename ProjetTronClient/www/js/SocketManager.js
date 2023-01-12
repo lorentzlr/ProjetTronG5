@@ -4,6 +4,7 @@ function SocketManager(affichageManager) {
     const ws = new WebSocket('ws://localhost:9898/');
     let deplacement_adversaires = null;
     let deplacement_joueur = null;
+    let nbVictoire = null;
 
     ws.onopen = function () {
         //Quand la co est ouverte, on va autoremplir les credentials si on en a qui sont stockés
@@ -28,7 +29,7 @@ function SocketManager(affichageManager) {
                     break;
                 }
                 // Si c'est true, la connexion a réussi
-                affichageManager.afficherPageConnexion(false, message);
+                affichageManager.premiereConnexion(message);
                 break;
             case 'launchGame':
                 console.log(message);
@@ -81,11 +82,8 @@ function SocketManager(affichageManager) {
                 //Et on l'arrête en indiquant que le jeu est terminé
                 deplacement_joueur.in_game = false;
 
-                //Donc on lui affiche qu'il a gagné et le bouton pour revenir au menu
-                document.getElementById('retourMenu').style.display = 'inline-block';
-                document.getElementById('infosJeuCourant').innerHTML = "Partie terminée !"
-                let retourMenu = document.querySelector("#retourMenu p");
-                retourMenu.innerHTML = "Vous avez gagné ! Revenir au menu : "
+                //Et on vient modifier les affichages
+                affichageManager.afficherVictoire();
                 break;
         }
     }

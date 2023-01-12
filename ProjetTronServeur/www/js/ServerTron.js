@@ -2,6 +2,7 @@ const http = require('http');
 const { RoomManager } = require("./rooms/RoomManager");
 const { ConnectedUserCollection } = require("./users/ConnectedUsersCollection");
 const events = require('events');
+const eventEmitter = new events.EventEmitter();
 const { User } = require("./users/User");
 const { Database } = require('./Database');
 const server = http.createServer();
@@ -113,11 +114,11 @@ function joueurQuitteLaRecherche(user) {
         };
 
         eventEmitter.emit("UpdateUsersInRoom", event_in_room_data);
+        eventEmitter.removeAllListeners();
     }
 }
 
 function joueurEnRechercheDePartie(user) {
-    const eventEmitter = new events.EventEmitter();
     // on rajoute le joueur dans une room
     let room = roomManager.addPlayerInRoom(user);
 
@@ -126,6 +127,9 @@ function joueurEnRechercheDePartie(user) {
         id_room: room.getId(),
         room_users: room.getUsersLogins()
     };
+
+    // sinon on attend que la room soit complète
+    eventEmitter.on("launchGame", (room_from_event) => lancementJeu(room_from_event, room.getId(), user.getConnection()));
 
     // Si la room est complète, on peut lancer le Grille
     if (room.isRoomFull()) {
@@ -138,7 +142,6 @@ function joueurEnRechercheDePartie(user) {
         let event_data = { room: room };
         room.gameStart();
         eventEmitter.emit("launchGame", event_data);
-        lancementJeu(event_data, room.getId(), user.getConnection(), eventEmitter);
         return;
     }
 
@@ -147,9 +150,6 @@ function joueurEnRechercheDePartie(user) {
 
     // on prévient qu'un nouvel utilisateur est dans la room
     eventEmitter.emit("UpdateUsersInRoom", event_in_room_data);
-
-    // sinon on attend que la room soit complète
-    eventEmitter.on("launchGame", (room_from_event) => lancementJeu(room_from_event, room.getId(), user.getConnection(), eventEmitter));
 }
 
 function UpdateUsersInRoom(room_data, room_send_id, connection) {
@@ -169,7 +169,7 @@ function UpdateUsersInRoom(room_data, room_send_id, connection) {
     );
 }
 
-function lancementJeu(room_event, id_room, connection, eventEmitter) {
+function lancementJeu(room_event, id_room, connection) {
     console.log("lancement du jeu")
     if (room_event.room.getId() === id_room) {
         // on lance le Grille pour les joueurs dans la rooms
