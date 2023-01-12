@@ -29,7 +29,7 @@ class DeplacementJoueur {
     // Ajout de l'eventListener pour les flèches directionnelles
     async initialisation() {
         window.addEventListener("keydown", this.choixDirection);
-        window.adversaire = this;
+        window.user = this;
         await this.deplacement(login);
     }
 
