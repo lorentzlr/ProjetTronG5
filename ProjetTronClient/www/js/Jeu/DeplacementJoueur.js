@@ -88,6 +88,9 @@ class DeplacementJoueur {
                 };
 
                 this.in_game = false; //On stoppe le joueur
+
+                //On affiche quelques infos et le bouton de retour au menu
+                document.getElementById('retourMenu').style.display = 'inline-block';
                 document.getElementById('infosJeuCourant').innerHTML = "Partie terminée !"
                 let retourMenu = document.querySelector("#retourMenu p"); 
                 retourMenu.innerHTML = "Vous avez perdu ! Revenir au menu : "

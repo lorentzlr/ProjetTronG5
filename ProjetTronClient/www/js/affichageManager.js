@@ -1,14 +1,21 @@
 function AffichageManager()
 {
-    function afficherPageConnexion(message)
+    /** Fonction qui affiche le menu du jeu après la connexion
+     * 
+     * @param {*} message le message renvoyé par le serveur
+     * @param {boolean} victoire indique si le menu est affiché après une victoire ou non (dans le cas d'un retour au menu après la fin d'une partie)
+     */
+    function afficherPageConnexion(victoire, message)
     {
         let nomJoueur = document.getElementById('name').value;
         document.getElementById('connection').style.display = 'none'; //On cache le menu de login
         document.getElementById('waitingRoom').style.display = 'inline-block'; //On affiche la salle d'attente
 
         //On affiche un petit message concernant la room
+        let nbVictoires = victoire === true ? message.nbWinUser + 1 : message.nbWinUser ; //Si on revient après victoire, on affiche le nb de victoires +1
+        
         document.getElementById('infoRoom').innerHTML = "Bienvenue dans la room " + message.idRoom;
-        document.getElementById('infoJoueur').innerHTML = "Joueur : " + nomJoueur + "</br> Victoires : " + message.nbWinUser;
+        document.getElementById('infoJoueur').innerHTML = "Joueur : " + nomJoueur + "</br> Victoires : " + nbVictoires;
 
         //On stocke les infos de connexion dans le localStorage
         localStorage.setItem("name", document.getElementById('name').value);
@@ -23,6 +30,7 @@ function AffichageManager()
 
     function afficherPartie() {
         document.getElementById('waitingRoom').style.display = 'none'; //On cache la room d'attente
+        document.getElementById('retourMenu').style.display = 'none';
         document.getElementById('game').style.display = 'inline-block'; //On affiche le div du Grille
     }
 
@@ -84,10 +92,16 @@ function AffichageManager()
      * Fonction qui remet la grille à 0 et renvoie le joueur vers le menu du jeu
      */
     function retourAuMenu(){
+        //On cache le jeu
         let game = document.getElementById('game');
         game.style.display = 'none';
-        let waiting_modale = document.getElementById('waiting-modale');
-        waiting_modale.showModal();
+
+        //On vide la grille
+        let grille = document.getElementById('grille');
+        grille.innerHTML = "";
+
+        //On revient au menu
+        afficherPageConnexion(true);
     }
 
     return  {

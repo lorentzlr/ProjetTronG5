@@ -28,9 +28,10 @@ function SocketManager(affichageManager) {
                     break;
                 }
                 // Si c'est true, la connexion a réussi
-                affichageManager.afficherPageConnexion(message);
+                affichageManager.afficherPageConnexion(false, message);
                 break;
             case 'launchGame':
+                console.log(message);
                 let adversaires = {};
                 let position_user = {
                     x: 0,
@@ -76,10 +77,15 @@ function SocketManager(affichageManager) {
                 break;
 
             case 'Winner': //Si le client reçoit ce message, c'est que c'est le dernier en vie
+
+                //Et on l'arrête en indiquant que le jeu est terminé
+                deplacement_joueur.in_game = false;
+
+                //Donc on lui affiche qu'il a gagné et le bouton pour revenir au menu
+                document.getElementById('retourMenu').style.display = 'inline-block';
                 document.getElementById('infosJeuCourant').innerHTML = "Partie terminée !"
                 let retourMenu = document.querySelector("#retourMenu p");
                 retourMenu.innerHTML = "Vous avez gagné ! Revenir au menu : "
-                deplacement_joueur.in_game = false;
                 break;
         }
     }

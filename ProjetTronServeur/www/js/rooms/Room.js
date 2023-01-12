@@ -67,6 +67,7 @@ module.exports = {
         gameEnd()
         {
             this.is_game_running = false;
+            this.users = [];
         }
 
         getUsersPositions() {

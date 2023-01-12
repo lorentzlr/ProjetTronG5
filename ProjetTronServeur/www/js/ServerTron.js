@@ -2,7 +2,6 @@ const http = require('http');
 const { RoomManager } = require("./rooms/RoomManager");
 const { ConnectedUserCollection } = require("./users/ConnectedUsersCollection");
 const events = require('events');
-const eventEmitter = new events.EventEmitter();
 const { User } = require("./users/User");
 const { Database } = require('./Database');
 const server = http.createServer();
@@ -53,10 +52,13 @@ wsServer.on('request', function (request) {
     });
 
     connection.on('close', function (reasonCode, description) {
-        let room = roomManager.getRoomById(user.getCurrentRoomId());
+        if (user === null) {
+            return;
+        };
 
+        let room = roomManager.getRoomById(user.getCurrentRoomId());
         // on vérifie si l'utilisateur est en game
-        if (room !== null && room.isGameRunning()) {
+        if (room !== undefined && room.isGameRunning()) {
             return;
         }
 
@@ -90,7 +92,6 @@ function deplacementJoueur(user, message) {
             gagnant.getConnection().send(JSON.stringify(messageFinPartie));
 
             //On vide la room et on lui indique que la partie est finie
-            room.removeUserFromRoom(gagnant);
             room.gameEnd();
         }
     } else { //Si le joueur est toujours vivant
@@ -116,6 +117,7 @@ function joueurQuitteLaRecherche(user) {
 }
 
 function joueurEnRechercheDePartie(user) {
+    const eventEmitter = new events.EventEmitter();
     // on rajoute le joueur dans une room
     let room = roomManager.addPlayerInRoom(user);
 
@@ -136,7 +138,7 @@ function joueurEnRechercheDePartie(user) {
         let event_data = { room: room };
         room.gameStart();
         eventEmitter.emit("launchGame", event_data);
-        lancementJeu(event_data, room.getId(), user.getConnection());
+        lancementJeu(event_data, room.getId(), user.getConnection(), eventEmitter);
         return;
     }
 
@@ -147,7 +149,7 @@ function joueurEnRechercheDePartie(user) {
     eventEmitter.emit("UpdateUsersInRoom", event_in_room_data);
 
     // sinon on attend que la room soit complète
-    eventEmitter.on("launchGame", (room_from_event) => lancementJeu(room_from_event, room.getId(), user.getConnection()));
+    eventEmitter.on("launchGame", (room_from_event) => lancementJeu(room_from_event, room.getId(), user.getConnection(), eventEmitter));
 }
 
 function UpdateUsersInRoom(room_data, room_send_id, connection) {
@@ -167,9 +169,11 @@ function UpdateUsersInRoom(room_data, room_send_id, connection) {
     );
 }
 
-function lancementJeu(room_event, id_room, connection) {
+function lancementJeu(room_event, id_room, connection, eventEmitter) {
+    console.log("lancement du jeu")
     if (room_event.room.getId() === id_room) {
         // on lance le Grille pour les joueurs dans la rooms
+        eventEmitter.removeAllListeners();
         return connection.send(
             JSON.stringify({
                 type: 'launchGame',
