@@ -3,6 +3,8 @@ const TAILLE_PLATEAU = 50;
 function SocketManager(affichageManager) {
     const ws = new WebSocket('ws://localhost:9898/');
     let deplacement_adversaires = null;
+    let deplacement_joueur = null;
+    let nbVictoire = null;
 
     ws.onopen = function () {
         //Quand la co est ouverte, on va autoremplir les credentials si on en a qui sont stockés
@@ -27,9 +29,10 @@ function SocketManager(affichageManager) {
                     break;
                 }
                 // Si c'est true, la connexion a réussi
-                affichageManager.afficherPageConnexion(message);
+                affichageManager.premiereConnexion(message);
                 break;
-            case 'launchGame' :
+            case 'launchGame':
+                console.log(message);
                 let adversaires = {};
                 let position_user = {
                     x: 0,
@@ -55,27 +58,36 @@ function SocketManager(affichageManager) {
                 deplacement_adversaires = new DeplacementAdversaires(affichageManager, adversaires, plateau);
                 deplacement_adversaires.initPositionAdversaires();
 
-                let deplacement_joueur = new DeplacementJoueur(
+                deplacement_joueur = new DeplacementJoueur(
                     direction_user, plateau, affichageManager, sendMessage, position_user
                 );
 
                 deplacement_joueur.initialisation(login);
 
                 break;
-            case 'UpdateUsersInRoom' :
+            case 'UpdateUsersInRoom':
                 // mise à jour des informations dans la modale
                 affichageManager.updateWaitingModale(message.room.users.length);
                 break;
-            case 'PositionClient' :
+            case 'PositionClient':
                 if (message.login !== login) {
                     deplacement_adversaires.changerPositionAdversaire(message.login, message.position)
                 }
 
                 // mise à jour des informations dans la modale
                 break;
+
+            case 'Winner': //Si le client reçoit ce message, c'est que c'est le dernier en vie
+
+                //Et on l'arrête en indiquant que le jeu est terminé
+                deplacement_joueur.in_game = false;
+
+                //Et on vient modifier les affichages
+                affichageManager.afficherVictoire();
+                break;
         }
     }
-    
+
     function sendMessage(message) {
         ws.send(JSON.stringify(message));
     }

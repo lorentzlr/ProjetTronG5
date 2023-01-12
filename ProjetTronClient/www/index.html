@@ -1,67 +1,74 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="Content-Security-Policy"
-              content="connect-src *; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval' ;">
-        <meta name="format-detection" content="telephone=no">
-        <meta name="msapplication-tap-highlight" content="no">
-        <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
-        <meta name="color-scheme" content="light dark">
-        <link rel="stylesheet" href="css/index.css">
-        <link rel="stylesheet" href="css/waiting-modal.css">
-        <link rel="stylesheet" href="css/plateau.css">
-        <title>TRON</title>
-    </head>
 
-    <body>
-        <div id="connection">
-            <div class="login-page">
-                <div class="form">
-                    <!-- <form class="register-form">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Security-Policy"
+        content="connect-src *; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval' ;">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/waiting-modal.css">
+    <link rel="stylesheet" href="css/plateau.css">
+    <title>TRON</title>
+</head>
+
+<body>
+    <div id="connection">
+        <div class="login-page">
+            <div class="form">
+                <!-- <form class="register-form">
                         <input type="text" placeholder="name"/>
                         <input type="password" placeholder="password"/>
                         <input type="text" placeholder="email address"/>
                         <button>create</button>
                         <p class="message">Already registered? <a href="#">Sign In</a></p>
                       </form> -->
-                    <input id="name" type="text" placeholder="username"/>
-                    <input id="password" type="password" placeholder="password"/>
-                    <button onclick="connection()">Login</button>
-                    <p id="messageServeur" class="message"></p>
-                    <!-- <p class="message">Not registered? <a href="#">Create an account</a></p> -->
-                </div>
+                <input id="name" type="text" placeholder="username" />
+                <input id="password" type="password" placeholder="password" />
+                <button onclick="connection()">Login</button>
+                <p id="messageServeur" class="message"></p>
+                <!-- <p class="message">Not registered? <a href="#">Create an account</a></p> -->
             </div>
         </div>
-        <div id="waitingRoom" class="waitingRoom">
-            <h2>En attente de suffisamment de joueurs !</h2>
-            <p id="infoRoom"></p>
-            <p id="infoJoueur"></p>
-            <input type="button" value="Chercher partie" onclick="joinGame()">
+    </div>
+    <div id="waitingRoom" class="waitingRoom">
+        <h2>Bienvenue, vous pouvez lancer une recherche de partie !</h2>
+        <p id="infoRoom"></p>
+        <p id="infoJoueur"></p>
+        <input type="button" value="Chercher partie" onclick="joinGame()">
+    </div>
+    <!--Modale en attente de joueurs-->
+    <dialog id="waiting-modale">
+        Recherche de joueurs : <p id="nb-joueurs"></p> /3 <br />
+        <div class="boutons">
+            <button onclick="quitRoom()">Quitter recherche</button>
         </div>
-        <!--Modale en attente de joueurs-->
-        <dialog id="waiting-modale">
-            Recherche de joueurs : <p id="nb-joueurs"></p> /3 <br/>
-            <div class="boutons">
-                <button onclick="quitRoom()">Quitter recherche</button>
-            </div>
-        </dialog>
+    </dialog>
 
-        <div id="game" hidden="">
-            <h1 id="infosJeuCourant"> Jeu lancé </h1>
-        </div>
+    <div id="game" hidden="">
+        <h1 id="infosJeuCourant"> Jeu lancé </h1>
 
         <table id="grille">
         </table>
 
-        <script src="js/Grille/Case.js"></script>
-        <script src="js/Grille/Plateau.js"></script>
-        <script src="js/Jeu/DeplacementAdversaires.js"></script>
-        <script src="js/rooms/Adversaire.js"></script>
-        <script src="js/Jeu/DeplacementJoueur.js"></script>
-        <script src="js/rooms/roomManager.js"></script>
-        <script src="js/affichageManager.js"></script>
-        <script src="js/SocketManager.js"></script>
-        <script src="js/index.js"></script>
-    </body>
+        <div id="retourMenu" hidden="">
+            <p></p>
+            <input type="button" value="Revenir au menu" onclick="backToMenu()">
+        </div>
+    </div>
+
+    <script src="js/Grille/Case.js"></script>
+    <script src="js/Grille/Plateau.js"></script>
+    <script src="js/Jeu/DeplacementAdversaires.js"></script>
+    <script src="js/rooms/Adversaire.js"></script>
+    <script src="js/Jeu/DeplacementJoueur.js"></script>
+    <script src="js/rooms/roomManager.js"></script>
+    <script src="js/affichageManager.js"></script>
+    <script src="js/SocketManager.js"></script>
+    <script src="js/index.js"></script>
+</body>
+
 </html>

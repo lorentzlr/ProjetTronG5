@@ -88,9 +88,13 @@ class DeplacementJoueur {
                 };
 
                 this.in_game = false; //On stoppe le joueur
-                document.getElementById('infosJeuCourant').innerHTML = "Vous avez perdu !"
-            
 
+                //On affiche quelques infos et le bouton de retour au menu
+                document.getElementById('retourMenu').style.display = 'inline-block';
+                document.getElementById('infosJeuCourant').innerHTML = "Partie terminée !"
+                let retourMenu = document.querySelector("#retourMenu p"); 
+                retourMenu.innerHTML = "Vous avez perdu ! Revenir au menu : "
+            
             } else { //Dans le cas où la case est libre, on envoie la position et isAlive reste true
                 message = {
                     type: 'PositionClient',

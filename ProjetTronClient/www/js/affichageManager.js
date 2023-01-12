@@ -1,39 +1,44 @@
-function AffichageManager()
-{
-    function afficherPageConnexion(message)
-    {
-        let nomJoueur = document.getElementById('name').value;
-        document.getElementById('connection').style.display = 'none'; //On cache le menu de login
-        document.getElementById('waitingRoom').style.display = 'inline-block'; //On affiche la salle d'attente
+function AffichageManager() {
 
-        //On affiche un petit message concernant la room
-        document.getElementById('infoRoom').innerHTML = "Bienvenue dans la room " + message.idRoom;
-        document.getElementById('infoJoueur').innerHTML = "Joueur : " + nomJoueur + "</br> Victoires : " + message.nbWinUser;
+    let nbVictoires = null;
+    let nomJoueur = null;
+    let idRoom = null;
 
+    /** Fonction qui affiche le menu du jeu après la connexion ou après une fin de partie
+     * 
+     * @param {*} message le message renvoyé par le serveur
+     */
+    function premiereConnexion(message) {
+        console.log(message)
+        nomJoueur = document.getElementById('name').value;
+        nbVictoires = message.nbWinUser === undefined ? 0 : message.nbWinUser; //On stocke le nb de victoires en local pour augmenter si victoire
+        idRoom = message.idRoom;
+        
         //On stocke les infos de connexion dans le localStorage
         localStorage.setItem("name", document.getElementById('name').value);
         localStorage.setItem("password", document.getElementById('password').value);
+
+        afficherMenu();
     }
 
-    function afficherMessage(message)
-    {
+    function afficherMessage(message) {
         console.log(message);
         document.getElementById('messageServeur').innerText = message;
     }
 
     function afficherPartie() {
         document.getElementById('waitingRoom').style.display = 'none'; //On cache la room d'attente
+        document.getElementById('retourMenu').style.display = 'none';
+        document.getElementById('infosJeuCourant').innerHTML = "Partie lancée !"
         document.getElementById('game').style.display = 'inline-block'; //On affiche le div du Grille
     }
 
-    function afficherWaitingModale()
-    {
+    function afficherWaitingModale() {
         let waiting_modale = document.getElementById('waiting-modale');
         waiting_modale.showModal();
     }
 
-    function fermerWaitingModale()
-    {
+    function fermerWaitingModale() {
         let waiting_modale = document.getElementById('waiting-modale');
         waiting_modale.close();
     }
@@ -80,9 +85,49 @@ function AffichageManager()
         tr.appendChild(td);
     }
 
-    return  {
+    /**
+     * Modifie les affichages pour indiquer qu'un joueur a gagné
+     */
+    function afficherVictoire() {
+        //Donc on lui affiche qu'il a gagné et le bouton pour revenir au menu
+        document.getElementById('retourMenu').style.display = 'inline-block';
+        document.getElementById('infosJeuCourant').innerHTML = "Partie terminée !"
+        let retourMenu = document.querySelector("#retourMenu p");
+        retourMenu.innerHTML = "Vous avez gagné ! Revenir au menu : "
+
+        //On augmente le nb de victoires du joueur
+        nbVictoires++;
+    };
+
+
+    /**
+     * Fonction qui remet la grille à 0 et renvoie le joueur vers le menu du jeu
+     */
+    function retourAuMenu() {
+        //On cache le jeu
+        let game = document.getElementById('game');
+        game.style.display = 'none';
+
+        //On vide la grille
+        let grille = document.getElementById('grille');
+        grille.innerHTML = "";
+
+        //On affiche le menu
+        afficherMenu();
+    }
+
+    function afficherMenu(){
+        document.getElementById('connection').style.display = 'none'; //On cache le menu de login
+        document.getElementById('waitingRoom').style.display = 'inline-block'; //On affiche la salle d'attente
+
+        //On affiche un petit message concernant la room
+        document.getElementById('infoRoom').innerHTML = "Bienvenue dans la room " + idRoom;
+        document.getElementById('infoJoueur').innerHTML = "Joueur : " + nomJoueur + "</br> Victoires : " + nbVictoires;
+    }
+
+    return {
         afficherMessage,
-        afficherPageConnexion,
+        premiereConnexion,
         afficherPartie,
         updateWaitingModale,
         fermerWaitingModale,
@@ -90,5 +135,7 @@ function AffichageManager()
         afficherPlateau,
         afficherPositionJoueurPrincipale,
         afficherAdversaire,
+        afficherVictoire,
+        retourAuMenu
     }
 }

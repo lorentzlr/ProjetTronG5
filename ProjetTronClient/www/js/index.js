@@ -33,3 +33,9 @@ function joinGame()
     socketManager.sendMessage({type: 'waitingForGame'});
 }
 
+/**
+ * Fonction de retour au menu une fois la partie perdue/terminée
+ */
+function backToMenu(){
+    affichageManager.retourAuMenu();
+}

@@ -24,7 +24,7 @@ module.exports = {
         // enlève un utilisateur de la room
         removeUserFromRoom(user) {
             for (let i = 0; i < this.users.length; i++) {
-                if (this.users[i].getLogin() !== user.getLogin) {
+                if (this.users[i].getLogin() === user.getLogin()) {
                     this.users[i].removeCurrentRoomId(); //L'user n'a plus de room
                     delete this.users.splice(i, 1); //La room ne contient plus l'user
                 }
@@ -67,6 +67,7 @@ module.exports = {
         gameEnd()
         {
             this.is_game_running = false;
+            this.users = [];
         }
 
         getUsersPositions() {
