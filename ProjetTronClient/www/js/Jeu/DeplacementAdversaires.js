@@ -17,6 +17,11 @@ class DeplacementAdversaires {
      * @param {*} position la position renvoyée par le serveur
      */
     changerPositionAdversaire(adversaire_login, position) {
+        //Juste avant de changer la position de l'adversaire, on transforme la case sur laquelle il était en wall
+        let positionActuelle = this.adversaires[adversaire_login].getPosition(); //Récup de la position
+        let caseActuelle = this.plateau.getCases()[positionActuelle.x][positionActuelle.y]; //Récup de la case de la pos
+        caseActuelle.becomeWall(); //Changement en mur
+
         this.adversaires[adversaire_login].setPosition(position); //On change sa position
         this.deplacerAdversaire(adversaire_login); //Et on appelle la fonction pour changer l'affichage du jeu
     }

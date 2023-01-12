@@ -25,7 +25,8 @@ module.exports = {
         removeUserFromRoom(user) {
             for (let i = 0; i < this.users.length; i++) {
                 if (this.users[i].getLogin() !== user.getLogin) {
-                    delete this.users.splice(i, 1);
+                    this.users[i].removeCurrentRoomId(); //L'user n'a plus de room
+                    delete this.users.splice(i, 1); //La room ne contient plus l'user
                 }
             }
         }

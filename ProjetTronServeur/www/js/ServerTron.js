@@ -1,10 +1,10 @@
 const http = require('http');
-const {RoomManager} = require("./rooms/RoomManager");
-const {ConnectedUserCollection} = require("./users/ConnectedUsersCollection");
+const { RoomManager } = require("./rooms/RoomManager");
+const { ConnectedUserCollection } = require("./users/ConnectedUsersCollection");
 const events = require('events');
 const eventEmitter = new events.EventEmitter();
-const {User} = require("./users/User");
-const {Database} = require('./Database');
+const { User } = require("./users/User");
+const { Database } = require('./Database');
 const server = http.createServer();
 server.listen(9898);
 
@@ -44,7 +44,7 @@ wsServer.on('request', function (request) {
             case "quitRoom":
                 joueurQuitteLaRecherche(user);
                 break;
-            case "PositionClient" :
+            case "PositionClient":
                 deplacementJoueur(user, message);
                 break;
             default:
@@ -73,10 +73,15 @@ function deplacementJoueur(user, message) {
     }
     let room = roomManager.getRoomById(room_id);
 
-    // envoie la nouvelle position du joueur à tous les autres joueurs de la partie
-    room.getUsers().forEach(user_from_room => {
-        user_from_room.getConnection().send(JSON.stringify(message));
-    });
+    //Si le message reçu indique que le joueur est mort, on va le retirer de la room
+    if (message.isAlive === false) {
+        room.removeUserFromRoom(user);
+    } else { //Si le joueur est toujours vivant
+        // envoie la nouvelle position du joueur à tous les autres joueurs de la partie
+        room.getUsers().forEach(user_from_room => {
+            user_from_room.getConnection().send(JSON.stringify(message));
+        });
+    }
 }
 
 function joueurQuitteLaRecherche(user) {
@@ -111,7 +116,7 @@ function joueurEnRechercheDePartie(user) {
         UpdateUsersInRoom(event_in_room_data, room.getId(), user.getConnection());
 
         // on lance la partie
-        let event_data = {room: room};
+        let event_data = { room: room };
         room.gameStart();
         eventEmitter.emit("launchGame", event_data);
         lancementJeu(event_data, room.getId(), user.getConnection());
@@ -135,12 +140,12 @@ function UpdateUsersInRoom(room_data, room_send_id, connection) {
 
     connection.send(
         JSON.stringify({
-                type: 'UpdateUsersInRoom',
-                room: {
-                    id_room: room_data.id_room,
-                    users: room_data.room_users
-                }
+            type: 'UpdateUsersInRoom',
+            room: {
+                id_room: room_data.id_room,
+                users: room_data.room_users
             }
+        }
         )
     );
 }

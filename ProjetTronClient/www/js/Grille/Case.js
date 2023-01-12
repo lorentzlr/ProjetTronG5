@@ -14,7 +14,7 @@ class Case {
         return this.valeur;
     }
 
-    becomeIsAWall() {
+    becomeWall() {
         this.is_a_wall = true;
     }
 }
