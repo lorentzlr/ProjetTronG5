@@ -80,6 +80,16 @@ function AffichageManager()
         tr.appendChild(td);
     }
 
+    /**
+     * Fonction qui remet la grille à 0 et renvoie le joueur vers le menu du jeu
+     */
+    function retourAuMenu(){
+        let game = document.getElementById('game');
+        game.style.display = 'none';
+        let waiting_modale = document.getElementById('waiting-modale');
+        waiting_modale.showModal();
+    }
+
     return  {
         afficherMessage,
         afficherPageConnexion,
@@ -90,5 +100,6 @@ function AffichageManager()
         afficherPlateau,
         afficherPositionJoueurPrincipale,
         afficherAdversaire,
+        retourAuMenu
     }
 }

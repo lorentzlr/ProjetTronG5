@@ -53,7 +53,7 @@ wsServer.on('request', function (request) {
     });
 
     connection.on('close', function (reasonCode, description) {
-        let room = roomManager.getRoomById(user.getId());
+        let room = roomManager.getRoomById(user.getCurrentRoomId());
 
         // on vérifie si l'utilisateur est en game
         if (room !== null && room.isGameRunning()) {
@@ -76,12 +76,29 @@ function deplacementJoueur(user, message) {
     //Si le message reçu indique que le joueur est mort, on va le retirer de la room
     if (message.isAlive === false) {
         room.removeUserFromRoom(user);
+
+        //Ici on va vérifier s'il reste un seul joueur ou pas
+        let joueursRestants = room.getUsers();
+        if (joueursRestants.length === 1) { //Si un seul joueur restant, fin de partie
+            let gagnant = joueursRestants[0];
+            database.addOneWin(gagnant.getLogin()); //On ajoute une victoire à cet user
+
+            //On crée le message à envoyer au client gagnant et on l'envoie
+            messageFinPartie = {
+                "type": 'Winner',
+            };
+            gagnant.getConnection().send(JSON.stringify(messageFinPartie));
+
+            //On vide la room et on lui indique que la partie est finie
+            room.removeUserFromRoom(gagnant);
+            room.gameEnd();
+        }
     } else { //Si le joueur est toujours vivant
         // envoie la nouvelle position du joueur à tous les autres joueurs de la partie
         room.getUsers().forEach(user_from_room => {
             user_from_room.getConnection().send(JSON.stringify(message));
         });
-    }
+    };
 }
 
 function joueurQuitteLaRecherche(user) {
