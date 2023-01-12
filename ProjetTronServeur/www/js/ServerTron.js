@@ -1,15 +1,15 @@
 const http = require('http');
 const { RoomManager } = require("./rooms/RoomManager");
 const { ConnectedUserCollection } = require("./users/ConnectedUsersCollection");
-const events = require('events');
-const eventEmitter = new events.EventEmitter();
 const { User } = require("./users/User");
 const { Database } = require('./Database');
+const { GameManager } = require('./GameManager');
 const server = http.createServer();
 server.listen(9898);
 
 const roomManager = new RoomManager();
 const database = new Database();
+const gameManager = new GameManager(roomManager, database);
 
 // Création du server WebSocket qui utilise le serveur précédent
 const WebSocketServer = require('websocket').server;
@@ -39,13 +39,13 @@ wsServer.on('request', function (request) {
                 connection.send(JSON.stringify(retourConnexion));
                 break;
             case "waitingForGame":
-                joueurEnRechercheDePartie(user);
+                gameManager.joueurEnRechercheDePartie(user);
                 break;
             case "quitRoom":
-                joueurQuitteLaRecherche(user);
+                gameManager.joueurQuitteLaRecherche(user);
                 break;
             case "PositionClient":
-                deplacementJoueur(user, message);
+                gameManager.deplacementJoueur(user, message);
                 break;
             default:
                 break;
@@ -65,122 +65,8 @@ wsServer.on('request', function (request) {
 
         // si non, on ne considère plus l'utilisateur comme connecté
         ConnectedUserCollection.removeUserFromCollection(user);
-        joueurQuitteLaRecherche(user);
+        gameManager.joueurQuitteLaRecherche(user);
     });
 });
-
-function deplacementJoueur(user, message) {
-    let room_id = user.getCurrentRoomId();
-    if (room_id === null) {
-        return;
-    }
-    let room = roomManager.getRoomById(room_id);
-
-    //Si le message reçu indique que le joueur est mort, on va le retirer de la room
-    if (message.isAlive === false) {
-        room.removeUserFromRoom(user);
-
-        //Ici on va vérifier s'il reste un seul joueur ou pas
-        let joueursRestants = room.getUsers();
-        if (joueursRestants.length === 1) { //Si un seul joueur restant, fin de partie
-            let gagnant = joueursRestants[0];
-            database.addOneWin(gagnant.getLogin()); //On ajoute une victoire à cet user
-
-            //On crée le message à envoyer au client gagnant et on l'envoie
-            messageFinPartie = {
-                "type": 'Winner',
-            };
-            gagnant.getConnection().send(JSON.stringify(messageFinPartie));
-
-            //On vide la room et on lui indique que la partie est finie
-            room.gameEnd();
-        }
-    } else { //Si le joueur est toujours vivant
-        // envoie la nouvelle position du joueur à tous les autres joueurs de la partie
-        room.getUsers().forEach(user_from_room => {
-            user_from_room.getConnection().send(JSON.stringify(message));
-        });
-    };
-}
-
-function joueurQuitteLaRecherche(user) {
-    let room_updated = roomManager.removeUserHisFromRoom(user);
-
-    // Si l'utilisateur était dans une room, on le retire de la room
-    if (room_updated !== null) {
-        let event_in_room_data = {
-            id_room: room_updated.getId(),
-            room_users: room_updated.getUsersLogins()
-        };
-
-        eventEmitter.emit("UpdateUsersInRoom", event_in_room_data);
-        eventEmitter.removeAllListeners();
-    }
-}
-
-function joueurEnRechercheDePartie(user) {
-    // on rajoute le joueur dans une room
-    let room = roomManager.addPlayerInRoom(user);
-
-    // on récupère les données pour l'evenement UpdateUsersInRoom
-    let event_in_room_data = {
-        id_room: room.getId(),
-        room_users: room.getUsersLogins()
-    };
-
-    // sinon on attend que la room soit complète
-    eventEmitter.on("launchGame", (room_from_event) => lancementJeu(room_from_event, room.getId(), user.getConnection()));
-
-    // Si la room est complète, on peut lancer le Grille
-    if (room.isRoomFull()) {
-        eventEmitter.emit("UpdateUsersInRoom", event_in_room_data);
-
-        // on prévient qu'un nouvel utilisateur est dans la room avant de lancer la partie
-        UpdateUsersInRoom(event_in_room_data, room.getId(), user.getConnection());
-
-        // on lance la partie
-        let event_data = { room: room };
-        room.gameStart();
-        eventEmitter.emit("launchGame", event_data);
-        return;
-    }
-
-    // on attend d'autres joueurs
-    eventEmitter.on("UpdateUsersInRoom", (room_data) => UpdateUsersInRoom(room_data, room.getId(), user.getConnection()));
-
-    // on prévient qu'un nouvel utilisateur est dans la room
-    eventEmitter.emit("UpdateUsersInRoom", event_in_room_data);
-}
-
-function UpdateUsersInRoom(room_data, room_send_id, connection) {
-    if (room_data.id_room !== room_send_id) {
-        return;
-    }
-
-    connection.send(
-        JSON.stringify({
-            type: 'UpdateUsersInRoom',
-            room: {
-                id_room: room_data.id_room,
-                users: room_data.room_users
-            }
-        }
-        )
-    );
-}
-
-function lancementJeu(room_event, id_room, connection) {
-    console.log("lancement du jeu")
-    if (room_event.room.getId() === id_room) {
-        // on lance le Grille pour les joueurs dans la rooms
-        eventEmitter.removeAllListeners();
-        return connection.send(
-            JSON.stringify({
-                type: 'launchGame',
-                positions: room_event.room.getUsersPositions()
-            })
-        );
-    }
-}
 
 console.log("Server on");
