@@ -110,7 +110,6 @@ module.exports = {
         }
         
         lancementJeu(room_event, id_room, connection) {
-            console.log("lancement du jeu")
             if (room_event.room.getId() === id_room) {
                 // on lance le Grille pour les joueurs dans la rooms
                 this.eventEmitter.removeAllListeners();

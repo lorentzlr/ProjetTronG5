@@ -28,16 +28,24 @@ wsServer.on('request', function (request) {
     // réception de message et en cas de fermeture de la WebSocket
     connection.on('message', async function (message) {
         message = JSON.parse(message.utf8Data);
+        console.log(message.type + "    login : " + message.login)
         switch (message.type) {
             case "FirstConnection":
+                if (ConnectedUserCollection.userAlreadyConnected(message.name)) {
+                    user = await reconnexion(message.name, connection);
+                    return;
+                }
                 //Appel de la fonction de l'objet database pour savoir si l'adversaire peut se connecter
                 const retourConnexion = await database.connectionUtilisateur(message.name, message.password, ConnectedUserCollection);
+
                 if (retourConnexion.connectionStatus) {
                     user = new User(message.name, connection);
+                    ConnectedUserCollection.addUser(user);
                 }
 
                 connection.send(JSON.stringify(retourConnexion));
                 break;
+
             case "waitingForGame":
                 gameManager.joueurEnRechercheDePartie(user);
                 break;
@@ -45,14 +53,20 @@ wsServer.on('request', function (request) {
                 gameManager.joueurQuitteLaRecherche(user);
                 break;
             case "PositionClient":
+                console.log('connections courantes : ' + JSON.stringify(ConnectedUserCollection.getConnections()));
+                if(user === null){
+                    user = await reconnexion(message.login, connection);
+                };
+
                 gameManager.deplacementJoueur(user, message);
                 break;
+
             default:
                 break;
         }
     });
 
-    connection.on('close', function (reasonCode, description) {
+    connection.on('close', function () {
         if (user === null) {
             return;
         };
@@ -68,5 +82,35 @@ wsServer.on('request', function (request) {
         gameManager.joueurQuitteLaRecherche(user);
     });
 });
+
+async function reconnexion(login, connection) {
+    console.log('connections courantes : ' + JSON.stringify(ConnectedUserCollection.getConnections()));
+    let room_id = ConnectedUserCollection.getConnections()[login].getCurrentRoomId();
+    if (room_id === null) {
+        let messageJson = {
+            type: "FirstConnection",
+            connectionStatus: false,
+            message: "Vous êtes déjà connecté ailleurs"
+        }
+
+        connection.send(JSON.stringify(messageJson));
+        return null;
+    }
+    let room = roomManager.getRoomById(room_id);
+    if (room !== undefined && room.isGameRunning()) {
+        ConnectedUserCollection.getConnections()[login].setConnection(connection);
+
+        let messageJson = {
+            type: "Reconnexion",
+            murs: room.getMurs(),
+            position_joueurs: room.getUsersPositions(),
+            connectionStatus: true,
+        }
+
+        connection.send(JSON.stringify(messageJson));
+
+        return ConnectedUserCollection.getConnections()[login];
+    }
+}
 
 console.log("Server on");

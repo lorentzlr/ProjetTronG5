@@ -39,3 +39,12 @@ function joinGame()
 function backToMenu(){
     affichageManager.retourAuMenu();
 }
+
+function switchConnection(){
+
+    let btn = document.getElementById('btnSwitchConnection');
+
+    btn.value = btn.value === 'Fermer connexion' ? 'Ouvrir connexion' : 'Fermer connexion';
+
+    socketManager.switchConnection();
+}

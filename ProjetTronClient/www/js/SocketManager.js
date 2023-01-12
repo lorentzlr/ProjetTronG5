@@ -1,12 +1,12 @@
 const TAILLE_PLATEAU = 50;
 
 function SocketManager(affichageManager) {
-    const ws = new WebSocket('ws://localhost:9898/');
+    let ws = new WebSocket('ws://localhost:9898/');
     let deplacement_adversaires = null;
     let deplacement_joueur = null;
-    let nbVictoire = null;
 
     ws.onopen = function () {
+        console.log("ouverture du socket");
         //Quand la co est ouverte, on va autoremplir les credentials si on en a qui sont stockés
         if (localStorage.getItem("name") !== null) { //On vérifie qu'il existe des credentials
             //On récupère les deux
@@ -16,7 +16,7 @@ function SocketManager(affichageManager) {
             //Et on les met directement dans les inputs
             document.getElementById('name').value = login;
             document.getElementById('password').value = password;
-        }
+        };
     }
     ws.onmessage = function (message) {
         //On parse le message pour avoir un objet
@@ -32,7 +32,6 @@ function SocketManager(affichageManager) {
                 affichageManager.premiereConnexion(message);
                 break;
             case 'launchGame':
-                console.log(message);
                 let adversaires = {};
                 let position_user = {
                     x: 0,
@@ -92,7 +91,19 @@ function SocketManager(affichageManager) {
         ws.send(JSON.stringify(message));
     }
 
+    /**
+     * Fonction de test : permet de simuler la fermeture et l'ouverture d'un webSocket
+     */
+    function switchConnection(){
+        if(ws.readyState === WebSocket.OPEN){
+            ws.close();
+        } else {
+            ws = new WebSocket('ws://localhost:9898/');
+        }
+    }
+
     return {
-        sendMessage
+        sendMessage,
+        switchConnection
     }
 }
