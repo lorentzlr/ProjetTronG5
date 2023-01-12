@@ -52,7 +52,10 @@ wsServer.on('request', function (request) {
         }
     });
 
-    connection.on('close', function (reasonCode, description) {
+    connection.on('close', function () {
+        if (user === null) {
+            return;
+        }
         let room = roomManager.getRoomById(user.getCurrentRoomId());
 
         // on vérifie si l'utilisateur est en game
