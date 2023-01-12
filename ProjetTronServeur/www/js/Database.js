@@ -39,13 +39,6 @@ module.exports = {
                             messageJson.connectionStatus = false;
 
                             return resolveConnection(messageJson);
-                        } else if (!ConnectedUserCollection.addUser(user)) {
-                            // vérifie si l'utilisateur est déjà connecté ailleurs
-                            messageJson.message = "Vous êtes déjà connecté ailleurs";
-                            messageJson.connectionStatus = false;
-
-                            // renvoie le résultat avec le message d'erreur
-                            return resolveConnection(messageJson);
                         } else { //Si les mdp correspondent on connecte
                             messageJson.nbWinUser = userFromDatabase.nbVictoire;
                             messageJson.message = "Connexion reussie";

@@ -34,6 +34,7 @@ wsServer.on('request', function (request) {
                 const retourConnexion = await database.connectionUtilisateur(message.name, message.password, ConnectedUserCollection);
                 if (retourConnexion.connectionStatus) {
                     user = new User(message.name, connection);
+                    ConnectedUserCollection.addUser(user);
                 }
 
                 connection.send(JSON.stringify(retourConnexion));
@@ -45,6 +46,7 @@ wsServer.on('request', function (request) {
                 gameManager.joueurQuitteLaRecherche(user);
                 break;
             case "PositionClient":
+                console.log(ConnectedUserCollection.connections)
                 gameManager.deplacementJoueur(user, message);
                 break;
             default:
