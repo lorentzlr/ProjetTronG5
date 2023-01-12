@@ -9,14 +9,10 @@ module.exports = {
             mongoose.connect('mongodb://localhost:27017/MaBD');
         };
 
-        async connectionUtilisateur(_name, _password, ConnectedUserCollection) {
-            const user = new User(
-                _name
-            )
+        async connectionUtilisateur(_name, _password) {
             let messageJson = {
                 type: "FirstConnection",
                 connectionStatus: true,
-                idRoom: 1,
                 message: ""
             }
 
@@ -39,17 +35,10 @@ module.exports = {
                             messageJson.connectionStatus = false;
 
                             return resolveConnection(messageJson);
-                        } else if (!ConnectedUserCollection.addUser(user)) {
-                            // vérifie si l'utilisateur est déjà connecté ailleurs
-                            messageJson.message = "Vous êtes déjà connecté ailleurs";
-                            messageJson.connectionStatus = false;
-
-                            // renvoie le résultat avec le message d'erreur
-                            return resolveConnection(messageJson);
                         } else { //Si les mdp correspondent on connecte
                             messageJson.nbWinUser = userFromDatabase.nbVictoire;
                             messageJson.message = "Connexion reussie";
-                        };
+                        }
                     } else {
                         // Si aucun utilisateur n'a été trouvé on le créé
                         const newUser = new UserDatabase({ name: _name, password: _password, nbVictoire: 0 });

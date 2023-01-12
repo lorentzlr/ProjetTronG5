@@ -15,6 +15,10 @@ module.exports = {
             return this.connection;
         }
 
+        setConnection(new_connection) {
+            this.connection = new_connection;
+        }
+
         getCurrentRoomId() {
             return this.current_room_id;
         }

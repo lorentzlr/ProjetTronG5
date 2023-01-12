@@ -7,7 +7,7 @@ class Plateau {
             let line = [];
             for (let j = 0; j <= size_plateau; j++) {
                 let one_case = new Case(i, j, valeur);
-                if (i == 0 || i == size_plateau || j == 0 || j == size_plateau) {
+                if (i === 0 || i === size_plateau || j === 0 || j === size_plateau) {
                     one_case.becomeWall();
                 }
                 line.push(one_case);
@@ -24,4 +24,11 @@ class Plateau {
     getMurs() {
         return this.murs;
     }
+
+    setMurs(murs) {
+        murs.forEach(mur => {
+            this.cases[mur.x][mur.y].becomeWall();
+        });
+    }
+
 }

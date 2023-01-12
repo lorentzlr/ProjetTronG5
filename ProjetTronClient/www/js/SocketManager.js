@@ -6,6 +6,11 @@ function SocketManager(affichageManager) {
     let deplacement_joueur = null;
     let nbVictoire = null;
 
+    let adversaires = null;
+    let position_user = null;
+    let direction_user = null;
+    let plateau = null;
+
     ws.onopen = function () {
         //Quand la co est ouverte, on va autoremplir les credentials si on en a qui sont stockés
         if (localStorage.getItem("name") !== null) { //On vérifie qu'il existe des credentials
@@ -18,6 +23,7 @@ function SocketManager(affichageManager) {
             document.getElementById('password').value = password;
         }
     }
+
     ws.onmessage = function (message) {
         //On parse le message pour avoir un objet
         message = JSON.parse(message.data);
@@ -33,14 +39,15 @@ function SocketManager(affichageManager) {
                 break;
             case 'launchGame':
                 console.log(message);
-                let adversaires = {};
-                let position_user = {
+                adversaires = {};
+                position_user = {
                     x: 0,
                     y: 0
                 }
-                let direction_user = "up";
+                direction_user = "up";
 
                 message.positions.forEach(user => {
+                    console.log(user);
                     if (user.login === login) {
                         position_user = user.etat_initial.position;
                         direction_user = user.etat_initial.direction;
@@ -52,7 +59,7 @@ function SocketManager(affichageManager) {
                 affichageManager.afficherPartie();
                 affichageManager.fermerWaitingModale();
 
-                let plateau = new Plateau(TAILLE_PLATEAU);
+                plateau = new Plateau(TAILLE_PLATEAU);
                 affichageManager.afficherPlateau(plateau);
 
                 deplacement_adversaires = new DeplacementAdversaires(affichageManager, adversaires, plateau);
@@ -69,14 +76,13 @@ function SocketManager(affichageManager) {
                 // mise à jour des informations dans la modale
                 affichageManager.updateWaitingModale(message.room.users.length);
                 break;
-            case 'PositionClient':
+            case 'PositionClient' :
                 if (message.login !== login) {
                     deplacement_adversaires.changerPositionAdversaire(message.login, message.position)
                 }
 
                 // mise à jour des informations dans la modale
                 break;
-
             case 'Winner': //Si le client reçoit ce message, c'est que c'est le dernier en vie
 
                 //Et on l'arrête en indiquant que le jeu est terminé
@@ -84,6 +90,59 @@ function SocketManager(affichageManager) {
 
                 //Et on vient modifier les affichages
                 affichageManager.afficherVictoire();
+            case 'MiseEnPause' :
+                deplacement_joueur.jeuEnPause();
+                // mise à jour des informations dans la modale
+                affichageManager.afficherPauseModale();
+                break;
+            case 'TimerPause' :
+                // mise à jour des informations dans la modale
+                affichageManager.updatePauseModale(message.timer);
+                break;
+            case 'Reprise' :
+                // mise à jour des informations dans la modale
+                affichageManager.fermerPauseModale();
+
+                deplacement_joueur.repriseDuJeu();
+                break;
+            case 'Reconnexion' :
+                affichageManager.premiereConnexion(message);
+
+                adversaires = {};
+                position_user = {
+                    x: 0,
+                    y: 0
+                }
+
+                direction_user = "up";
+
+                message.position_joueurs.forEach(user => {
+                    if (user.login === login) {
+                        position_user = user.etat_initial.position;
+                    } else {
+                        adversaires[user.login] = new Adversaire(user.login, user.etat_initial.position);
+                    }
+                });
+
+                affichageManager.afficherPartie();
+                affichageManager.fermerWaitingModale();
+
+                plateau = new Plateau(TAILLE_PLATEAU);
+                plateau.setMurs(message.murs);
+                // murs
+                affichageManager.afficherPlateau(plateau);
+
+                deplacement_adversaires = new DeplacementAdversaires(affichageManager, adversaires, plateau);
+                deplacement_adversaires.initPositionAdversaires();
+
+                deplacement_joueur = new DeplacementJoueur(
+                    direction_user, plateau, affichageManager, sendMessage, position_user
+                );
+
+                deplacement_joueur.initListener();
+                deplacement_joueur.jeuEnPause();
+                // mise à jour des informations dans la modale
+                affichageManager.afficherPauseModale();
                 break;
         }
     }

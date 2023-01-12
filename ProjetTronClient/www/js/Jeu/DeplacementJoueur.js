@@ -8,6 +8,15 @@ class DeplacementJoueur {
         this.position = position_initiale;
     }
 
+    jeuEnPause() {
+        this.in_game = false;
+    }
+
+    async repriseDuJeu() {
+        this.in_game = true;
+        await this.deplacement(login);
+    }
+
     choixDirection(event) {
         event.preventDefault();
         switch (event.key) {
@@ -28,9 +37,13 @@ class DeplacementJoueur {
 
     // Ajout de l'eventListener pour les flèches directionnelles
     async initialisation() {
+        this.initListener();
+        await this.deplacement(login);
+    }
+
+    initListener() {
         window.addEventListener("keydown", this.choixDirection);
         window.user = this;
-        await this.deplacement(login);
     }
 
     async deplacement(login) {

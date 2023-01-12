@@ -37,9 +37,9 @@ module.exports = {
                 }
             } else { //Si le joueur est toujours vivant
                 // envoie la nouvelle position du joueur à tous les autres joueurs de la partie
-                room.getUsers().forEach(user_from_room => {
-                    user_from_room.getConnection().send(JSON.stringify(message));
-                });
+                for (let login in room.getUsers()) {
+                    room.getUsers()[login].user.getConnection().send(JSON.stringify(message));
+                }
             };
         }
 
@@ -117,7 +117,7 @@ module.exports = {
                 return connection.send(
                     JSON.stringify({
                         type: 'launchGame',
-                        positions: room_event.room.getUsersPositions()
+                        positions: room_event.room.getUsersStartPositions()
                     })
                 );
             }

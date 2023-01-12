@@ -1,6 +1,6 @@
 class ConnectedUserCollection {
     constructor() {
-        this.connections = [];
+        this.connections = {};
     }
 
     addUser(user) {
@@ -10,11 +10,13 @@ class ConnectedUserCollection {
         }
 
         // rajoute l'utilisateur dans la liste des utilisateurs connectés
-        this.connections[user.getLogin()] = {
-            user: user,
-        };
+        this.connections[user.getLogin()] = user;
 
         return true;
+    }
+
+    getConnections() {
+        return this.connections;
     }
 
     // Vérifie si un utilisateur est connecté

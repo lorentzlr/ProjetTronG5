@@ -51,7 +51,6 @@ class RoomManager {
 
     // enlève un utilisateur de la room et ne le considère plus en recherche de partie
     removeUserHisFromRoom(user) {
-        console.log("removeUserHisFromRoom");
         let room_id = user.getCurrentRoomId();
 
         if (room_id === null) {

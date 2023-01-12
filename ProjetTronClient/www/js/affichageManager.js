@@ -1,5 +1,4 @@
 function AffichageManager() {
-
     let nbVictoires = null;
     let nomJoueur = null;
     let idRoom = null;
@@ -46,6 +45,24 @@ function AffichageManager() {
     // on met à jour la modale de recherche de partie
     function updateWaitingModale(nb_joueurs) {
         document.getElementById("nb-joueurs").innerHTML = nb_joueurs;
+    }
+
+    function afficherPauseModale()
+    {
+        let pause_modale = document.getElementById('pause-modale');
+        document.getElementById("timer").innerHTML = 30;
+        pause_modale.showModal();
+    }
+
+    function fermerPauseModale()
+    {
+        let pause_modale = document.getElementById('pause-modale');
+        pause_modale.close();
+    }
+
+    // on met à jour la modale de recherche de partie
+    function updatePauseModale(timer) {
+        document.getElementById("timer").innerHTML = timer;
     }
 
     function afficherPositionJoueurPrincipale(case_value) {
@@ -97,7 +114,7 @@ function AffichageManager() {
 
         //On augmente le nb de victoires du joueur
         nbVictoires++;
-    };
+    }
 
 
     /**
@@ -136,6 +153,9 @@ function AffichageManager() {
         afficherPositionJoueurPrincipale,
         afficherAdversaire,
         afficherVictoire,
-        retourAuMenu
+        retourAuMenu,
+        afficherPauseModale,
+        fermerPauseModale,
+        updatePauseModale,
     }
 }
