@@ -12,6 +12,10 @@ table {
     background-color: red;
 }
 
-.position-Mur{
+.position-Mur {
     background-color: black;
+}
+
+.position-adversaire {
+    background-color: blue;
 }

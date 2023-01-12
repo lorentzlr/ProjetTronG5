@@ -3,17 +3,35 @@ module.exports = Object.freeze({
     MAX_ROOMS: 8,
     START_POSITIONS: [
         {
-            x: 0,
-            y: 0
-        },{
-            x: 10,
-            y: 0
-        },{
-            x: 0,
-            y: 10
-        },{
-            x: 10,
-            y: 10
+            position:
+                {
+                    x: 3,
+                    y: 3
+                },
+            direction: "right"
+        }, {
+            position:
+                {
+                    x: 13,
+                    y: 3,
+                },
+            direction: "down"
+        }, {
+            position:
+                {
+                    x: 3,
+                    y: 13,
+                },
+            direction: "left"
+
+        }, {
+            position:
+                {
+                    x: 13,
+                    y: 13,
+                },
+            direction: "up"
+
         },
     ]
 });

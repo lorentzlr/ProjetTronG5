@@ -26,7 +26,7 @@ module.exports = {
 
         removeCurrentRoomId()
         {
-            // this.setCurrentRoomId(null);
+            this.setCurrentRoomId(null);
         }
     }
 }

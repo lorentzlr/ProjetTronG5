@@ -2,10 +2,9 @@ const TAILLE_PLATEAU = 50;
 
 function SocketManager(affichageManager) {
     const ws = new WebSocket('ws://localhost:9898/');
+    let deplacement_adversaires = null;
 
     ws.onopen = function () {
-        console.log("Bienvenue sur le Grille Tron");
-
         //Quand la co est ouverte, on va autoremplir les credentials si on en a qui sont stockés
         if (localStorage.getItem("name") !== null) { //On vérifie qu'il existe des credentials
             //On récupère les deux
@@ -17,11 +16,9 @@ function SocketManager(affichageManager) {
             document.getElementById('password').value = password;
         }
     }
-
     ws.onmessage = function (message) {
         //On parse le message pour avoir un objet
         message = JSON.parse(message.data);
-        console.log(message);
         switch (message.type) {
             case 'FirstConnection':
                 //Si c'est false, la connexion a échoué, on va afficher le message du serveur
@@ -33,28 +30,52 @@ function SocketManager(affichageManager) {
                 affichageManager.afficherPageConnexion(message);
                 break;
             case 'launchGame' :
+                let adversaires = {};
+                let position_user = {
+                    x: 0,
+                    y: 0
+                }
+                let direction_user = "up";
+
+                message.positions.forEach(user => {
+                    if (user.login === login) {
+                        position_user = user.etat_initial.position;
+                        direction_user = user.etat_initial.direction;
+                    } else {
+                        adversaires[user.login] = new Adversaire(user.login, user.etat_initial.position);
+                    }
+                })
+
                 affichageManager.afficherPartie();
                 affichageManager.fermerWaitingModale();
-                
+
                 let plateau = new Plateau(TAILLE_PLATEAU);
-                let deplacement_joueur = new DeplacementJoueur("right", plateau, affichageManager, sendMessage);
-
                 affichageManager.afficherPlateau(plateau);
-                deplacement_joueur.initialisation();
 
-                //TODO: faire passer les positions au Grille pour placer les joueurs
+                deplacement_adversaires = new DeplacementAdversaires(affichageManager, adversaires, plateau);
+                deplacement_adversaires.initPositionAdversaires();
+
+                let deplacement_joueur = new DeplacementJoueur(
+                    direction_user, plateau, affichageManager, sendMessage, position_user
+                );
+
+                deplacement_joueur.initialisation(login);
+
                 break;
             case 'UpdateUsersInRoom' :
                 // mise à jour des informations dans la modale
                 affichageManager.updateWaitingModale(message.room.users.length);
                 break;
             case 'PositionClient' :
+                if (message.login !== login) {
+                    deplacement_adversaires.changerPositionAdversaire(message.login, message.position)
+                }
+
                 // mise à jour des informations dans la modale
-                console.log(message);
                 break;
         }
     }
-
+    
     function sendMessage(message) {
         ws.send(JSON.stringify(message));
     }
