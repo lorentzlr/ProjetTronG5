@@ -59,14 +59,3 @@ Le lancement de l'application envoie directement sur un menu de connexion, il su
 Une fois dans le menu de lancement de partie, le bouton "Lancer la recherche" permet d'entrer dans une salle d'attente, qui se remplit quand d'autres joueurs cherchent une partie
 
 Quand le nombre de joueurs suffisant est atteint, la partie se lance. Une fois terminé (gagnée ou perdue), le bouton "Revenir au menu" renvoie vers le menu de lancement de partie
-
-Patch supplémentaire de gestion des déconnexions (optionnel)
-===========
-
-> :warning: **Ce patch n'est pas fonctionnel** : l'installation du patch n'empêchera pas l'application de fonctionner, mais la gestion des déconnexions n'est pas fonctionnelle !
-
-Un patch est disponible dans l'archive du projet, il contient le code qui tente de mettre en place la gestion des déconnexions lors de la fermeture complète d'un onglet. Il peut être installé via la commande :
-```
-patch -p1 < {chemin/vers/patch}
-```
-En indiquant donc le chemin d'accès au fichier du patch
