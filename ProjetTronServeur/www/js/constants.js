@@ -1,5 +1,5 @@
 module.exports = Object.freeze({
-    MAX_USERS_PER_ROOM: 1,
+    MAX_USERS_PER_ROOM: 4,
     MAX_ROOMS: 8,
     START_POSITIONS: [
         {
