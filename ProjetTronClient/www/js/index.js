@@ -4,6 +4,21 @@ const socketManager = SocketManager(affichageManager);
 let login = "";
 let password = "";
 
+
+function MouvementUp(){
+    window.user.direction = "up"
+}
+
+function MouvementLeft(){
+    window.user.direction = "left"
+}
+
+function MouvementRight(){
+    window.user.direction = "right"
+}
+function MouvementDown(){
+    window.user.direction = "down"
+}
 function connection() {
     // on récupère les informations de connection
     login = document.getElementById('name').value;
