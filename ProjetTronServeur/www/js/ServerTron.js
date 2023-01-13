@@ -46,7 +46,6 @@ wsServer.on('request', function (request) {
                 gameManager.joueurQuitteLaRecherche(user);
                 break;
             case "PositionClient":
-                console.log(ConnectedUserCollection.connections)
                 gameManager.deplacementJoueur(user, message);
                 break;
             default:
