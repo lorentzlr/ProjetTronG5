@@ -67,7 +67,7 @@ function SocketManager(affichageManager) {
                 break;
             case 'UpdateUsersInRoom':
                 // mise à jour des informations dans la modale
-                affichageManager.updateWaitingModale(message.room.users.length);
+                affichageManager.updateWaitingModale(message.room.users.length, message.room_max);
                 break;
             case 'PositionClient':
                 if (message.login !== login) {
