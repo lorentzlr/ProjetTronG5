@@ -72,7 +72,7 @@ module.exports = {
             this.eventEmitter.on("launchGame", (room_from_event) => this.lancementJeu(room_from_event, room.getId(), user.getConnection()));
         
             // Si la room est complète, on peut lancer le Grille
-            if (room.isRoomFull()) {
+            if (room.isRoomFull() && !room.isGameRunning()) {
                 this.eventEmitter.emit("UpdateUsersInRoom", event_in_room_data);
         
                 // on prévient qu'un nouvel utilisateur est dans la room avant de lancer la partie

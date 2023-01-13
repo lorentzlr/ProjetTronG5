@@ -61,9 +61,7 @@ wsServer.on('request', function (request) {
 
         let room = roomManager.getRoomById(user.getCurrentRoomId());
         // on vérifie si l'utilisateur est en game
-        if (room !== undefined && room.isGameRunning()) {
-            return;
-        }
+
 
         // si non, on ne considère plus l'utilisateur comme connecté
         ConnectedUserCollection.removeUserFromCollection(user);
