@@ -26,9 +26,16 @@ class DeplacementJoueur {
         }
     }
 
+    moveUp(event){
+        event.preventDefault();
+        event.currentTarget.user.direction = "up"
+    }
+
     // Ajout de l'eventListener pour les flèches directionnelles
     async initialisation() {
         window.addEventListener("keydown", this.choixDirection);
+        document.getElementById("up-button").addEventListener("click", this.direction = "up");
+
         window.user = this;
         await this.deplacement(login);
     }
