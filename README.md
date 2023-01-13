@@ -7,6 +7,14 @@ Installation du projet
 
 - Dézipper l'archive
 
+### Lancement de mongoDB
+
+- Dans un autre terminal, lancer la commande :
+```
+mongod --dbpath={emplacementBD/dossierBD}
+```
+Avec comme paramètre --dbpath l'emplacement du répertoire d'installation de mongoDB
+
 ### Lancement du serveur
 
 - Dans le répertoire source du projet, lancer la commande : 
@@ -17,14 +25,6 @@ npm install
 ```
 node ServerTron.js
 ```
-
-### Lancement de mongoDB
-
-- Dans un autre terminal, lancer la commande :
-```
-mongod --dbpath={emplacementBD/dossierBD}
-```
-Avec comme paramètre --dbpath l'emplacement du répertoire d'installation de mongoDB
 
 ### Lancement de l'application
 
