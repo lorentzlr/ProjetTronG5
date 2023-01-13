@@ -1,4 +1,5 @@
 const events = require('events');
+const constants = require('./constants');
 const eventEmitter = new events.EventEmitter();
 
 module.exports = {
@@ -103,7 +104,8 @@ module.exports = {
                     room: {
                         id_room: room_data.id_room,
                         users: room_data.room_users
-                    }
+                    },
+                    room_max : constants.MAX_USERS_PER_ROOM
                 }
                 )
             );

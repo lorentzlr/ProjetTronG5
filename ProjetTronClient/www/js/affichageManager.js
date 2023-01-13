@@ -44,8 +44,9 @@ function AffichageManager() {
     }
 
     // on met à jour la modale de recherche de partie
-    function updateWaitingModale(nb_joueurs) {
+    function updateWaitingModale(nb_joueurs,nb_joueurs_max) {
         document.getElementById("nb-joueurs").innerHTML = nb_joueurs;
+        document.getElementById("nb_joueurs_max").innerHTML = nb_joueurs_max
     }
 
     function afficherPositionJoueurPrincipale(case_value) {
@@ -121,7 +122,6 @@ function AffichageManager() {
         document.getElementById('waitingRoom').style.display = 'inline-block'; //On affiche la salle d'attente
 
         //On affiche un petit message concernant la room
-        document.getElementById('infoRoom').innerHTML = "Bienvenue dans la room " + idRoom;
         document.getElementById('infoJoueur').innerHTML = "Joueur : " + nomJoueur + "</br> Victoires : " + nbVictoires;
     }
 
