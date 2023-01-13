@@ -116,7 +116,7 @@ module.exports = {
                 return connection.send(
                     JSON.stringify({
                         type: 'launchGame',
-                        positions: room_event.room.getUsersPositions()
+                        positions: room_event.room.getActualUsersPosition()
                     })
                 );
             }

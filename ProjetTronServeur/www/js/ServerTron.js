@@ -53,7 +53,6 @@ wsServer.on('request', function (request) {
                 gameManager.joueurQuitteLaRecherche(user);
                 break;
             case "PositionClient":
-                console.log('connections courantes : ' + JSON.stringify(ConnectedUserCollection.getConnections()));
                 if(user === null){
                     user = await reconnexion(message.login, connection);
                 };
@@ -84,7 +83,6 @@ wsServer.on('request', function (request) {
 });
 
 async function reconnexion(login, connection) {
-    console.log('connections courantes : ' + JSON.stringify(ConnectedUserCollection.getConnections()));
     let room_id = ConnectedUserCollection.getConnections()[login].getCurrentRoomId();
     if (room_id === null) {
         let messageJson = {
@@ -98,7 +96,8 @@ async function reconnexion(login, connection) {
     }
     let room = roomManager.getRoomById(room_id);
     if (room !== undefined && room.isGameRunning()) {
-        ConnectedUserCollection.getConnections()[login].setConnection(connection);
+        let user = ConnectedUserCollection.getConnections()[login]
+        user.setConnection(connection);
 
         let messageJson = {
             type: "Reconnexion",
@@ -109,7 +108,7 @@ async function reconnexion(login, connection) {
 
         connection.send(JSON.stringify(messageJson));
 
-        return ConnectedUserCollection.getConnections()[login];
+        return user;
     }
 }
 
